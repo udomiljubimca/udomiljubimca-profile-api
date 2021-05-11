@@ -22,4 +22,8 @@ public class Type {
     private long id;
 
     private String typeName;
+
+    public Type(String typeName) {
+        this.typeName = typeName;
+    }
 }
