@@ -4,9 +4,11 @@ package com.java.profileservice;
 import com.java.profileservice.model.Age;
 import com.java.profileservice.model.Gender;
 import com.java.profileservice.model.Nature;
+import com.java.profileservice.model.Type;
 import com.java.profileservice.service.AgeService;
 import com.java.profileservice.service.GenderService;
 import com.java.profileservice.service.NatureService;
+import com.java.profileservice.service.TypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
@@ -26,6 +28,9 @@ public class DbInit implements CommandLineRunner {
     @Autowired
     private NatureService natureService;
 
+    @Autowired
+    private TypeService typeService;
+
     @Override
     public void run(String... args) throws Exception {
         
@@ -41,8 +46,8 @@ public class DbInit implements CommandLineRunner {
         // TODO: 11.5.21. City, Coexistance, Gender, Health, Nature, Size, Type
 
         this.genderService.deleteAll();
-        Gender gender1 = new Gender("Male");
-        Gender gender2 = new Gender("Female");
+        Gender gender1 = new Gender("Muški");
+        Gender gender2 = new Gender("Ženski");
         List<Gender> genderList = Arrays.asList(gender1, gender2);
 
         this.genderService.saveAll(genderList);
@@ -58,6 +63,13 @@ public class DbInit implements CommandLineRunner {
 
         this.natureService.saveAll(natureList);
 
+        this.typeService.deleteAll();
+        Type type1 = new Type("Pas");
+        Type type2 = new Type("Mačka");
+        Type type3 = new Type("Ostalo");
+        List<Type> typeList = Arrays.asList(type1, type2, type3);
+
+        this.typeService.saveAll(typeList);
 
     }
 }
