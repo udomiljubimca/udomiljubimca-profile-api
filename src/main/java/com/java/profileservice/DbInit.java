@@ -36,8 +36,8 @@ public class DbInit implements CommandLineRunner {
         // TODO: 11.5.21. City, Coexistance, Gender, Health, Nature, Size, Type
 
         this.genderService.deleteAll();
-        Gender gender1 = new Gender("male");
-        Gender gender2 = new Gender("female");
+        Gender gender1 = new Gender("Male");
+        Gender gender2 = new Gender("Female");
         List<Gender> genderList = Arrays.asList(gender1, gender2);
 
         this.genderService.saveAll(genderList);
