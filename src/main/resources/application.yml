@@ -1,0 +1,28 @@
+server:
+  port: 5555
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/profiledatabase?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+    username: postgres
+    password: password
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQL81Dialect
+        format_sql: true
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
+  servlet:
+    multipart:
+      enabled: false
+      max-file-size: 10MB
+      max-request-size: 10MB
+cloudinary:
+  cloud_name:
+  api_key:
+  api_secret:
