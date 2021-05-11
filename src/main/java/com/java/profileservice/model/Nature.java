@@ -22,5 +22,9 @@ public class Nature {
     private long id;
 
     private String natureName;
+
+    public Nature(String natureName) {
+        this.natureName = natureName;
+    }
 }
 
