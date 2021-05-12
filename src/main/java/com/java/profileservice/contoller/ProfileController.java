@@ -2,8 +2,8 @@ package com.java.profileservice.contoller;
 
 
 import com.java.profileservice.config.ApiResponse;
-import com.java.profileservice.model.Profile;
-import com.java.profileservice.service.impl.ProfileServiceImpl;
+import com.java.profileservice.dto.ProfileDto;
+import com.java.profileservice.service.ProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,14 +15,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProfileController {
 
     @Autowired
-    public ProfileServiceImpl profileService;
+    public ProfileService profileService;
 
     @RequestMapping(value = "/save", method = RequestMethod.POST)
-    public ApiResponse saveProfile(@RequestBody Profile profile){
+    public ApiResponse saveProfile(@RequestBody ProfileDto profileDto) throws Exception {
 
-        profileService.saveProfile(profile);
-
-        return new ApiResponse(profile);
+        return new ApiResponse(profileService.saveProfile(profileDto));
     }
 
 
