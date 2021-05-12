@@ -1,18 +1,8 @@
 package com.java.profileservice;
 
 
-import com.java.profileservice.model.Age;
-import com.java.profileservice.model.Gender;
-import com.java.profileservice.model.Nature;
-import com.java.profileservice.model.Type;
-import com.java.profileservice.service.AgeService;
-import com.java.profileservice.service.GenderService;
-import com.java.profileservice.service.NatureService;
-import com.java.profileservice.service.TypeService;
-import com.java.profileservice.service.impl.AgeServiceImpl;
-import com.java.profileservice.service.impl.GenderServiceImpl;
-import com.java.profileservice.service.impl.NatureServiceImpl;
-import com.java.profileservice.service.impl.TypeServiceImpl;
+import com.java.profileservice.model.*;
+import com.java.profileservice.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
@@ -35,9 +25,21 @@ public class DbInit implements CommandLineRunner {
     @Autowired
     private TypeService typeService;
 
+    @Autowired
+    private SizeService sizeService;
+
+    @Autowired
+    private HealthService healthService;
+
+    @Autowired
+    private CityService cityService;
+
+    @Autowired
+    private CoexistenceService coexistenceService;
+
     @Override
     public void run(String... args) throws Exception {
-        
+
         //Age
         this.ageService.deleteAll();
         Age age1 = new Age("Junior");
@@ -46,8 +48,6 @@ public class DbInit implements CommandLineRunner {
         List<Age> ageList = Arrays.asList(age1, age2, age3);
 
         this.ageService.saveAll(ageList);
-
-        // TODO: 11.5.21. City, Coexistance, Gender, Health, Nature, Size, Type
 
         this.genderService.deleteAll();
         Gender gender1 = new Gender("Muški");
@@ -72,8 +72,35 @@ public class DbInit implements CommandLineRunner {
         Type type2 = new Type("Mačka");
         Type type3 = new Type("Ostalo");
         List<Type> typeList = Arrays.asList(type1, type2, type3);
-
         this.typeService.saveAll(typeList);
+
+        this.sizeService.deleteAll();
+        Size size1 = new Size("Mali");
+        Size size2 = new Size("Srednji");
+        Size size3 = new Size("Veliki");
+        List<Size> sizeList = Arrays.asList(size1, size2, size3);
+        this.sizeService.saveAll(sizeList);
+
+        this.healthService.deleteAll();
+        Health health1 = new Health("Sterilisan");
+        Health health2 = new Health("Posebne potrebe");
+        Health health3 = new Health("Posebne potrebe tekst");
+        List<Health> healthList = Arrays.asList(health1, health2, health3);
+        this.healthService.saveAll(healthList);
+
+        this.cityService.deleteAll();
+        City city1 = new City("Beograd");
+        City city2 = new City("Novi Sad");
+        City city3 = new City("Nis");
+        List<City> cityList = Arrays.asList(city1, city2, city3);
+        this.cityService.saveAll(cityList);
+
+        this.coexistenceService.deleteAll();
+        Coexistence coexistence1 = new Coexistence("Decom");
+        Coexistence coexistence2 = new Coexistence("Psima");
+        Coexistence coexistence3 = new Coexistence("Mackama");
+        List<Coexistence> coexistenceList = Arrays.asList(coexistence1, coexistence2, coexistence3);
+        this.coexistenceService.saveAll(coexistenceList);
 
     }
 }

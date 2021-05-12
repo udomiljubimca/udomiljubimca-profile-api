@@ -6,9 +6,9 @@ import java.util.List;
 
 public interface AgeService {
 
-    public void save(Age age);
+    void save(Age age);
 
-    public void deleteAll();
+    void deleteAll();
 
-    public void saveAll(List<Age> ageList);
+    void saveAll(List<Age> ageList);
 }

@@ -6,9 +6,9 @@ import java.util.List;
 
 public interface NatureService {
 
-    public void save(Nature nature);
+    void save(Nature nature);
 
-    public void deleteAll();
+    void deleteAll();
 
-    public void saveAll(List<Nature> natureList);
+    void saveAll(List<Nature> natureList);
 }

@@ -21,4 +21,8 @@ public class Coexistence {
     private long id;
 
     private String coexistenceName;
+
+    public Coexistence(String coexistenceName) {
+        this.coexistenceName = coexistenceName;
+    }
 }

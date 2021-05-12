@@ -3,10 +3,8 @@ package com.java.profileservice.model;
 
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Data
@@ -21,9 +19,13 @@ public class Health {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private boolean sterilized;
+    private String name;
 
-    private boolean special_needs;
+    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinTable(name = "Profile_Health", joinColumns = @JoinColumn(name = "idHealth"), inverseJoinColumns = @JoinColumn(name = "idProfile"))
+    private List<Profile> profiles;
 
-    private String special_needs_text;
+    public Health(String name) {
+        this.name = name;
+    }
 }
