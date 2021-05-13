@@ -37,8 +37,13 @@ public class DbInit implements CommandLineRunner {
     @Autowired
     private CoexistenceService coexistenceService;
 
+    @Autowired
+    private ProfileService profileService;
+
     @Override
     public void run(String... args) throws Exception {
+
+        profileService.deleteAll();
 
         //Age
         this.ageService.deleteAll();
