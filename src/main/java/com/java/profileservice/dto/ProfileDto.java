@@ -17,17 +17,18 @@ public class ProfileDto {
     private String description;
     private String videoLink;
     private String specialHabitsText;
+    private String specialNeeds;
     private boolean specialHabits;
     private boolean vaccinated;
+    private boolean goodWithKids;
+    private boolean goodWithDogs;
+    private boolean goodWithCats;
     private long ageId;
     private long cityId;
-    private long coexistenceId;
     private long genderId;
-    private long healthId;
     private long natureId;
     private long sizeId;
     private long typeId;
-    private List<Long> imagesIds;
-
+    private List<Long> healthIds;
 
 }
