@@ -5,6 +5,7 @@ import com.java.profileservice.model.Profile;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 public interface ProfileService {
 
@@ -15,5 +16,7 @@ public interface ProfileService {
     String uploadImages(MultipartFile multipartFile) throws IOException;
 
     Profile getProfileById(Long id);
+
+    List<Profile> getAllProfiles();
 
     }

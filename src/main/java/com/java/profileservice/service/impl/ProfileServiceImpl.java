@@ -172,6 +172,11 @@ public class ProfileServiceImpl implements ProfileService {
         return profile.get();
     }
 
+    @Override
+    public List<Profile> getAllProfiles() {
+        return profileRepository.findAll();
+    }
+
 
     //Convert MultipartFile in File
     public File convertMultipartFileToFile(MultipartFile multipartFile) {
