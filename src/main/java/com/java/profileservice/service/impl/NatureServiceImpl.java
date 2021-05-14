@@ -25,4 +25,10 @@ public class NatureServiceImpl implements NatureService {
     public void saveAll(List<Nature> natureList) {
         natureRepository.saveAll(natureList);
     }
+
+    @Override
+    public List<Nature> getAllNatures() {
+        List<Nature> natureList = natureRepository.findAll();
+        return natureList;
+    }
 }

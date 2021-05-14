@@ -11,4 +11,6 @@ public interface NatureService {
     void deleteAll();
 
     void saveAll(List<Nature> natureList);
+
+    List<Nature> getAllNatures();
 }

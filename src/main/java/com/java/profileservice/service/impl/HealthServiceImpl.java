@@ -28,4 +28,10 @@ public class HealthServiceImpl implements HealthService {
     public void saveAll(List<Health> healthList) {
         healthRepository.saveAll(healthList);
     }
+
+    @Override
+    public List<Health> getAllHealths() {
+        List<Health> healthList = healthRepository.findAll();
+        return healthList;
+    }
 }
