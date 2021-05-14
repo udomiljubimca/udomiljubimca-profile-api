@@ -1,6 +1,7 @@
 package com.java.profileservice.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -21,6 +22,7 @@ public class Image {
     private String imageLink;
 
     @ManyToOne(cascade = CascadeType.ALL)
+    @JsonIgnore
     private Profile profile;
 
 }

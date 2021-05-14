@@ -22,4 +22,8 @@ public class Size {
     private long id;
 
     private String sizeName;
+
+    public Size(String sizeName) {
+        this.sizeName = sizeName;
+    }
 }

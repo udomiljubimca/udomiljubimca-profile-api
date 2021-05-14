@@ -21,4 +21,8 @@ public class Gender {
     private long id;
 
     private String genderName;
+
+    public Gender(String genderName) {
+        this.genderName = genderName;
+    }
 }
