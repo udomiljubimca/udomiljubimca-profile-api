@@ -11,4 +11,6 @@ public interface HealthService {
     void deleteAll();
 
     void saveAll(List<Health> healthList);
+
+    List<Health> getAllHealths();
 }

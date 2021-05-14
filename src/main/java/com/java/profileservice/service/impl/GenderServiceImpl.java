@@ -25,4 +25,10 @@ public class GenderServiceImpl implements GenderService {
     public void saveAll(List<Gender> genderList) {
         genderRepository.saveAll(genderList);
     }
+
+    @Override
+    public List<Gender> getAllGenders() {
+        List<Gender> genderList = genderRepository.findAll();
+        return genderList;
+    }
 }
