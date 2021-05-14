@@ -11,4 +11,6 @@ public interface AgeService {
     void deleteAll();
 
     void saveAll(List<Age> ageList);
+
+    List<Age> getAllAges();
 }

@@ -1,6 +1,5 @@
 package com.java.profileservice.service.impl;
 
-import com.java.profileservice.config.ApiResponse;
 import com.java.profileservice.model.Age;
 import com.java.profileservice.repository.AgeRepository;
 import com.java.profileservice.service.AgeService;
@@ -25,5 +24,11 @@ public class AgeServiceImpl  implements AgeService {
 
     public void saveAll(List<Age> ageList){
         ageRepository.saveAll(ageList);
+    }
+
+    @Override
+    public List<Age> getAllAges() {
+        List<Age> ageList = ageRepository.findAll();
+        return ageList;
     }
 }

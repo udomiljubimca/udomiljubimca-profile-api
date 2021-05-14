@@ -28,4 +28,10 @@ public class CoexistenceServiceImpl implements CoexistenceService {
     public void saveAll(List<Coexistence> coexistenceList) {
         coexistenceRepository.saveAll(coexistenceList);
     }
+
+    @Override
+    public List<Coexistence> getAllCoexistences() {
+        List<Coexistence> coexistenceList = coexistenceRepository.findAll();
+        return coexistenceList;
+    }
 }

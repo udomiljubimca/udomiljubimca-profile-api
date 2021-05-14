@@ -11,4 +11,6 @@ public interface CityService {
     void deleteAll();
 
     void saveAll(List<City> cityList);
+
+    List<City> getAllCities();
 }
