@@ -20,9 +20,6 @@ public class AgeController {
     @GetMapping("/all")
     public ApiResponse getAllAges() {
         List<Age> ageList = ageService.getAllAges();
-        
-        if(ageList == null) {
-        }
 
         return new ApiResponse(ageList);
     }
