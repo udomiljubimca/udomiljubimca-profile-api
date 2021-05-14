@@ -61,5 +61,11 @@ public class ProfileController {
         return new ApiResponse(images);
     }
 
+    @GetMapping("/all")
+    public ApiResponse allProfiles(){
+        List<Profile> allProfiles = profileService.getAllProfiles();
+        return new ApiResponse(allProfiles);
+    }
+
 
 }
