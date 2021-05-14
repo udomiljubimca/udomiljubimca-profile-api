@@ -28,4 +28,10 @@ public class CityServiceImpl implements CityService {
     public void saveAll(List<City> cityList) {
         cityRepository.saveAll(cityList);
     }
+
+    @Override
+    public List<City> getAllCities() {
+        List<City> cityList = cityRepository.findAll();
+        return cityList;
+    }
 }

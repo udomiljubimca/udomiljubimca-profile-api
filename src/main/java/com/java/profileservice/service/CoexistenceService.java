@@ -11,4 +11,6 @@ public interface CoexistenceService {
     void deleteAll();
 
     void saveAll(List<Coexistence> coexistenceList);
+
+    List<Coexistence> getAllCoexistences();
 }
