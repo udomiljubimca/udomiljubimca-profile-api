@@ -26,15 +26,27 @@ public class ProfileController {
     @Autowired
     public ProfileService profileService;
 
-    @PostMapping(value = "/save", consumes = MULTIPART_FORM_DATA_VALUE)
-    public ApiResponse saveProfile(@RequestParam(value = "files", required = false) MultipartFile[] multipartFiles,
-                                   @RequestParam(value = "json") String json) throws Exception {
+    @PostMapping(value = "/save", consumes = {MULTIPART_FORM_DATA_VALUE,
+                                                    APPLICATION_JSON_VALUE})
+    public ApiResponse saveProfile(
+            @RequestParam(value = "files", required = false) MultipartFile[] multipartFiles,
+            @RequestParam(value = "json") String json)
+            throws Exception {
+
+        ProfileDto profileDto;
 
         if (multipartFiles == null) {
             throw new Exception("Images are not preset");
         }
+        if (json == null) {
+            throw new Exception("Json are not preset");
+        }
 
-        ProfileDto profileDto = new ObjectMapper().readValue(json, ProfileDto.class);
+        try {
+            profileDto = new ObjectMapper().readValue(json, ProfileDto.class);
+        } catch (IOException e) {
+            throw new IOException(e.getMessage());
+        }
 
         return new ApiResponse(profileService.saveProfile(profileDto, multipartFiles));
     }
@@ -45,24 +57,8 @@ public class ProfileController {
         return new ApiResponse(profile);
     }
 
-    @PostMapping(value = "/upload", consumes = MULTIPART_FORM_DATA_VALUE)
-    public ApiResponse saveImages(@RequestParam(value = "files", required = false) MultipartFile[] multipartFiles) {
-
-        List<Image> images = new ArrayList<>();
-        Arrays.asList(multipartFiles).stream().limit(3).forEach(multipartFile -> {
-            Image image = new Image();
-            try {
-                image.setImageLink(profileService.uploadImages(multipartFile));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            images.add(image);
-        });
-        return new ApiResponse(images);
-    }
-
     @GetMapping("/all")
-    public ApiResponse allProfiles(){
+    public ApiResponse allProfiles() {
         List<Profile> allProfiles = profileService.getAllProfiles();
         return new ApiResponse(allProfiles);
     }
