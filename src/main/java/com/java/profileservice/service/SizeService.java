@@ -12,4 +12,6 @@ public interface SizeService {
 
     void saveAll(List<Size> sizeList);
 
+    List<Size> getAllSizes();
+
 }

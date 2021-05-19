@@ -30,4 +30,10 @@ public class SizeServiceImpl implements SizeService {
         sizeRepository.saveAll(sizeList);
     }
 
+    @Override
+    public List<Size> getAllSizes() {
+        List<Size> sizeList = sizeRepository.findAll();
+        return sizeList;
+    }
+
 }

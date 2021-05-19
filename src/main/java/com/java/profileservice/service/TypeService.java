@@ -11,4 +11,8 @@ public interface TypeService {
     void deleteAll();
 
     void saveAll(List<Type> typeList);
+
+    List<Type> getAllTypes();
+
+
 }
