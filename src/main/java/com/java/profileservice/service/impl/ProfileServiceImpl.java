@@ -15,8 +15,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInput;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ProfileServiceImpl implements ProfileService {
@@ -57,24 +57,10 @@ public class ProfileServiceImpl implements ProfileService {
     @Value("${cloudinary.api_secret}")
     private String cloudApiSecret;
 
+
     public Profile saveProfile(ProfileDto profileDto, MultipartFile[] multipartFiles) throws Exception {
 
         Profile profile = new Profile();
-
-        List<Image> images = new ArrayList<>();
-        Arrays.asList(multipartFiles).stream().limit(3).forEach(multipartFile -> {
-            Image image = new Image();
-            try {
-                image.setImageLink(uploadImages(multipartFile));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            image.setProfile(profile);
-            images.add(image);
-
-        });
-        imageService.saveAll(images);
-        profile.setImages(images);
 
         profile.setProfileName(profileDto.getProfileName());
         profile.setAssociationName(profileDto.getAssociationName());
@@ -138,14 +124,60 @@ public class ProfileServiceImpl implements ProfileService {
         List<Health> healthList = healthRepository.getHealthByIds(profileDto.getHealthIds());
         profile.setHealths(healthList);
 
+        List<Image> images = new ArrayList<>();
+        Arrays.asList(multipartFiles).stream().limit(3).forEach(multipartFile -> {
+            Image image = new Image();
+            try {
+                image.setImageLink(uploadImages(multipartFile));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            image.setProfile(profile);
+            images.add(image);
+
+        });
+        imageService.saveAll(images);
+        profile.setImages(images);
+
         profileRepository.save(profile);
 
         return profile;
     }
 
     @Override
-    public void deleteAll() {
+    public void deleteAll() throws Exception {
+
+        List<Image> images = imageService.getAll();
+
+        for (Image url : images) {
+            Cloudinary cloudinary = new Cloudinary(
+                    "cloudinary://" + cloudApiKey + ":" + cloudApiSecret + "@" + cloudName);
+            cloudinary.api().deleteResources(new ArrayList<>(
+                            Arrays.asList(url.getImageLink().substring(66, 86))),
+                    ObjectUtils.emptyMap());
+        }
+
         profileRepository.deleteAll();
+    }
+
+    @Override
+    public void deleteById(Long id) throws Exception {
+
+        Optional<Profile> profile = profileRepository.findById(id);
+        if (profile.isPresent()) {
+            Cloudinary cloudinary = new Cloudinary(
+                    "cloudinary://" + cloudApiKey + ":" + cloudApiSecret + "@" + cloudName);
+            List<String> urls = profile.get().getImages()
+                    .stream().map(Image::getImageLink)
+                    .collect(Collectors.toList());
+
+            for (String url : urls) {
+                cloudinary.api().deleteResources(new ArrayList<>(
+                                Arrays.asList(url.substring(66, 86))),
+                        ObjectUtils.emptyMap());
+            }
+        }
+        profileRepository.deleteById(id);
     }
 
 
@@ -177,6 +209,18 @@ public class ProfileServiceImpl implements ProfileService {
         return profileRepository.findAll();
     }
 
+    @Override
+    public List<Profile> getAllByTypeId(Long typeId) {
+
+        Optional<Type> type = typeRepository.findById(typeId);
+
+        if (type.isPresent()) {
+            return profileRepository.findAllByTypeId(typeId);
+        } else {
+            return new ArrayList<>();
+        }
+
+    }
 
     //Convert MultipartFile in File
     public File convertMultipartFileToFile(MultipartFile multipartFile) {

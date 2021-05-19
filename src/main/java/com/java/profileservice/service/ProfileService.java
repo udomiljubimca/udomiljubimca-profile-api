@@ -11,12 +11,16 @@ public interface ProfileService {
 
     Profile saveProfile(ProfileDto profileDto, MultipartFile[] multipartFiles) throws Exception;
 
-    void deleteAll();
+    void deleteAll() throws Exception;
+
+    void deleteById(Long id) throws Exception;
 
     String uploadImages(MultipartFile multipartFile) throws IOException;
 
     Profile getProfileById(Long id);
 
     List<Profile> getAllProfiles();
+
+    List<Profile> getAllByTypeId(Long typeId);
 
     }
