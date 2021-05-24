@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.sql.Date;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -57,7 +58,6 @@ public class ProfileServiceImpl implements ProfileService {
     @Value("${cloudinary.api_secret}")
     private String cloudApiSecret;
 
-
     public Profile saveProfile(ProfileDto profileDto, MultipartFile[] multipartFiles) throws Exception {
 
         Profile profile = new Profile();
@@ -72,6 +72,8 @@ public class ProfileServiceImpl implements ProfileService {
         profile.setGoodWithKids(profileDto.isGoodWithKids());
         profile.setGoodWithDogs(profileDto.isGoodWithDogs());
         profile.setGoodWithCats(profileDto.isGoodWithCats());
+        profile.setUploadDate(new Date(new java.util.Date().getTime()));
+
 
         if (profileDto.getSpecialNeeds() == null || profileDto.getSpecialNeeds().equalsIgnoreCase("")) {
             profile.setSpecialNeeds("Nisu unesene posebne potrebe.");
@@ -238,4 +240,5 @@ public class ProfileServiceImpl implements ProfileService {
 
         return convFile;
     }
+
 }
