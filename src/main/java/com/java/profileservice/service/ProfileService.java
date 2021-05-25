@@ -23,4 +23,7 @@ public interface ProfileService {
 
     List<Profile> getAllByTypeId(Long typeId);
 
-    }
+    List<Profile> getAllByCityId(Long cityId, int page);
+
+
+}

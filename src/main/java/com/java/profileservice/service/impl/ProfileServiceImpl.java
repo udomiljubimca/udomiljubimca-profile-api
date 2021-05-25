@@ -9,6 +9,8 @@ import com.java.profileservice.service.ImageService;
 import com.java.profileservice.service.ProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -222,6 +224,19 @@ public class ProfileServiceImpl implements ProfileService {
             return new ArrayList<>();
         }
 
+    }
+
+    @Override
+    public List<Profile> getAllByCityId(Long cityId, int page) {
+
+        Optional<City> city = cityRepository.findById(cityId);
+        Pageable pageable = PageRequest.of(page, 2);
+
+        if (city.isPresent()) {
+            return profileRepository.findAllByCityId(cityId, pageable);
+        } else {
+            return new ArrayList<>();
+        }
     }
 
     //Convert MultipartFile in File

@@ -61,8 +61,15 @@ public class ProfileController {
     }
 
     @GetMapping("/type/{id}")
-    public ApiResponse getAllByTagId(@PathVariable(name = "id") Long id) {
+    public ApiResponse getAllByTypeId(@PathVariable(name = "id") Long id) {
         List<Profile> list = profileService.getAllByTypeId(id);
+        return new ApiResponse(list);
+    }
+
+    @GetMapping("/city/{id}")
+    public ApiResponse getAllByCityId(@PathVariable(name = "id") Long id,
+                                      @RequestParam (name = "page") int page) {
+        List<Profile> list = profileService.getAllByCityId(id, page);
         return new ApiResponse(list);
     }
 
