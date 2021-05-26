@@ -8,7 +8,8 @@ import lombok.*;
 @Builder
 @ToString
 @EqualsAndHashCode
-public class ProfileSearchDTO {
+public class ProfileSearchDto {
+
     private long cityId;
     private long typeId;
 }

@@ -4,7 +4,7 @@ package com.java.profileservice.contoller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.java.profileservice.config.ApiResponse;
 import com.java.profileservice.dto.ProfileDto;
-import com.java.profileservice.dto.ProfileSearchDTO;
+import com.java.profileservice.dto.ProfileSearchDto;
 import com.java.profileservice.model.Profile;
 import com.java.profileservice.service.ProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,9 +74,17 @@ public class ProfileController {
         return new ApiResponse(list);
     }
 
-    @GetMapping(value = "/search")
-    public ApiResponse search(@RequestBody ProfileSearchDTO profileSearchDTO, @RequestParam(name = "page") int page) {
-        List<Profile> list = profileService.profileSearch(profileSearchDTO.getCityId(), profileSearchDTO.getTypeId(), page);
+    @GetMapping(value = "/initialSearch")
+    public ApiResponse search(@RequestBody ProfileSearchDto profileSearchDto,
+                              @RequestParam(name = "page") int page) throws Exception {
+
+        if (profileSearchDto == null
+                || profileSearchDto.getCityId() == 0
+                || profileSearchDto.getTypeId() == 0) {
+            throw new Exception("Bad request!");
+        }
+        List<Profile> list =
+                profileService.profileSearch(profileSearchDto.getCityId(), profileSearchDto.getTypeId(), page);
         return new ApiResponse(list);
     }
 

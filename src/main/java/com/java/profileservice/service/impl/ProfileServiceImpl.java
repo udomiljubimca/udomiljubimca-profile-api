@@ -275,6 +275,22 @@ public class ProfileServiceImpl implements ProfileService {
         return profile.get();
     }
 
+    @Override
+    public List<Profile> profileSearch(long cityId, long typeId, int page) {
+
+        Optional<City> city = cityRepository.findById(cityId);
+        Optional<Type> type = typeRepository.findById(typeId);
+
+        Pageable pageable = PageRequest.of(page, 2);
+
+        if (city.isPresent() && type.isPresent()) {
+            return profileRepository.searchProfile(cityId, typeId, pageable);
+        } else {
+            return new ArrayList<>();
+        }
+    }
+
+
     private void mapFromDto(ProfileDto profileDto, Optional<Profile> profile) {
 
         profile.get().setProfileName(profileDto.getProfileName());
