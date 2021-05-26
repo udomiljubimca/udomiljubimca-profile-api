@@ -25,9 +25,5 @@ public interface ProfileService {
 
     List<Profile> getAllByCityId(Long cityId, int page);
 
-    List<Profile> profileSearch(Long cityId, Long typeId, int page);
-
-
-
-
+    Profile updateProfile(Long id, MultipartFile[] multipartFiles, String json) throws Exception;
 }

@@ -69,7 +69,7 @@ public class ProfileController {
 
     @GetMapping("/city/{id}")
     public ApiResponse getAllByCityId(@PathVariable(name = "id") Long id,
-                                      @RequestParam (name = "page") int page) {
+                                      @RequestParam(name = "page") int page) {
         List<Profile> list = profileService.getAllByCityId(id, page);
         return new ApiResponse(list);
     }
@@ -85,6 +85,21 @@ public class ProfileController {
     public ApiResponse deleteById(@PathVariable(name = "id") Long id) throws Exception {
         profileService.deleteById(id);
         return new ApiResponse("Profile is successfully deleted!");
+    }
+
+    @PutMapping("/{id}")
+    public ApiResponse updateProfile(@PathVariable(name = "id") Long id,
+                                     @RequestParam(value = "files", required = false) MultipartFile[] multipartFiles,
+                                     @RequestParam(value = "json", required = false) String json)
+            throws Exception {
+        if (multipartFiles == null) {
+            multipartFiles = new MultipartFile[0];
+        }
+        if (json == null || json.equalsIgnoreCase("")) {
+            json = "empty";
+        }
+        Profile profile = profileService.updateProfile(id, multipartFiles, json);
+        return new ApiResponse(profile);
     }
 
 
