@@ -3,6 +3,7 @@ package com.java.profileservice.repository;
 import com.java.profileservice.model.Profile;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
@@ -13,4 +14,7 @@ public interface ProfileRepository extends JpaRepository<Profile, Long> {
 
     //Find by cityId
     List<Profile> findAllByCityId(Long cityId, Pageable pageable);
+
+    @Query("select p from Profile p where p.city.id = :cityId and p.type.id = :typeId")
+    List<Profile> searchProfile(Long cityId, Long typeId, Pageable pageable);
 }
