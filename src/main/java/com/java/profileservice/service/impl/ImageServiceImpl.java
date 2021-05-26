@@ -18,4 +18,19 @@ public class ImageServiceImpl implements ImageService {
     public void saveAll(List<Image> imageList) {
         imageRepository.saveAll(imageList);
     }
+
+    @Override
+    public List<Image> getAll() {
+        return imageRepository.findAll();
+    }
+
+    @Override
+    public void deleteImageById(Long imageId) {
+        imageRepository.deleteById(imageId);
+    }
+
+    @Override
+    public void deleteImagesByIds(List<Long> ids) {
+        imageRepository.deleteByIds(ids);
+    }
 }

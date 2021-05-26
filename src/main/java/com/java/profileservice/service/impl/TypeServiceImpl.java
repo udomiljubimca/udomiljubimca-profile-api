@@ -25,4 +25,10 @@ public class TypeServiceImpl implements TypeService {
     public void saveAll(List<Type> typeList) {
         typeRepository.saveAll(typeList);
     }
+
+    @Override
+    public List<Type> getAllTypes() {
+        List<Type> typeList = typeRepository.findAll();
+        return typeList;
+    }
 }
