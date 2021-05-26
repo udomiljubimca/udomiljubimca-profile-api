@@ -25,5 +25,5 @@ public interface ProfileService {
 
     List<Profile> getAllByCityId(Long cityId, int page);
 
-
+    Profile updateProfile(Long id, MultipartFile[] multipartFiles, String json) throws Exception;
 }
