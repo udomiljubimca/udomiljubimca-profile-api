@@ -239,6 +239,18 @@ public class ProfileServiceImpl implements ProfileService {
         }
     }
 
+    @Override
+    public List<Profile> profileSearch(Long cityId, Long typeId, int page) {
+        Optional<City> city = cityRepository.findById(cityId);
+        Pageable pageable = PageRequest.of(page, 16);
+
+        if(city.isPresent()) {
+            return profileRepository.searchProfile(cityId, typeId, pageable);
+        }else {
+            return new ArrayList<>();
+        }
+    }
+
     //Convert MultipartFile in File
     public File convertMultipartFileToFile(MultipartFile multipartFile) {
 

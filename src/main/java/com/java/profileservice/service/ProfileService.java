@@ -25,5 +25,9 @@ public interface ProfileService {
 
     List<Profile> getAllByCityId(Long cityId, int page);
 
+    List<Profile> profileSearch(Long cityId, Long typeId, int page);
+
+
+
 
 }
