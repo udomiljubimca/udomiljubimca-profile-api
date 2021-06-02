@@ -7,6 +7,8 @@ import com.java.profileservice.dto.ProfileDto;
 import com.java.profileservice.dto.ProfileSearchDto;
 import com.java.profileservice.model.Profile;
 import com.java.profileservice.service.ProfileService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,6 +23,8 @@ import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 @RequestMapping(value = "/profile")
 public class ProfileController {
 
+    private static final Logger LOG = LoggerFactory.getLogger(ProfileController.class);
+
     @Autowired
     public ProfileService profileService;
 
@@ -34,6 +38,7 @@ public class ProfileController {
         ProfileDto profileDto;
 
         if (multipartFiles == null) {
+            LOG.error("Image is not present!");
             throw new Exception("Images are not preset");
         }
         if (json == null) {
