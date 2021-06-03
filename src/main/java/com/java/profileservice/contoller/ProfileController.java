@@ -3,6 +3,7 @@ package com.java.profileservice.contoller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.java.profileservice.config.ApiResponse;
+import com.java.profileservice.dto.FilterDto;
 import com.java.profileservice.dto.ProfileDto;
 import com.java.profileservice.dto.ProfileSearchDto;
 import com.java.profileservice.model.Profile;
@@ -90,6 +91,19 @@ public class ProfileController {
         }
         List<Profile> list =
                 profileService.profileSearch(profileSearchDto.getCityId(), profileSearchDto.getTypeId(), page);
+        return new ApiResponse(list);
+    }
+
+    @GetMapping(value = "/filter")
+    public ApiResponse filter(@RequestBody FilterDto filterDto) throws Exception {
+        if (filterDto == null) {
+            throw new Exception("Bad request");
+        }
+
+        List<Profile> list =
+                profileService.filterProfile(filterDto.getCityId(), filterDto.getGenderIds(),
+                        filterDto.getAgeIds(), filterDto.getSizeIds());
+
         return new ApiResponse(list);
     }
 
