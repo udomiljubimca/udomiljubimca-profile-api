@@ -28,4 +28,6 @@ public interface ProfileService {
     Profile updateProfile(Long id, MultipartFile[] multipartFiles, String json) throws Exception;
 
     List<Profile> profileSearch(long cityId, long typeId, int page);
+
+    List<Profile> filterProfile(Long cityId, List<Long> genderIds, List<Long> ageIds, List<Long> sizeIds);
 }

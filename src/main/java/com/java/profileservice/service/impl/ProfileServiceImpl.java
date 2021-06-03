@@ -308,6 +308,13 @@ public class ProfileServiceImpl implements ProfileService {
         }
     }
 
+    @Override
+    public List<Profile> filterProfile(Long cityId, List<Long> genderIds, List<Long> ageIds, List<Long> sizeIds) {
+
+            return profileRepository.filterProfile(cityId, genderIds, ageIds, sizeIds);
+
+    }
+
 
     private void mapFromDto(ProfileDto profileDto, Optional<Profile> profile) {
 
