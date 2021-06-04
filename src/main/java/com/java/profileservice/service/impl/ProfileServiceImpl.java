@@ -16,6 +16,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -25,6 +27,10 @@ import java.util.stream.Collectors;
 
 @Service
 public class ProfileServiceImpl implements ProfileService {
+
+    public List<Long> AGE_IDS;
+    public List<Long> GENDER_IDS;
+    public List<Long> SIZE_IDS;
 
     @Autowired
     private ProfileRepository profileRepository;
@@ -62,6 +68,13 @@ public class ProfileServiceImpl implements ProfileService {
     @Value("${cloudinary.api_secret}")
     private String cloudApiSecret;
 
+    @PostConstruct
+    private void init(){
+        AGE_IDS = ageRepository.getAllIds();
+        GENDER_IDS = genderRepository.getAllIds();
+        SIZE_IDS = sizeRepository.getAllIds();
+    }
+
     public Profile saveProfile(ProfileDto profileDto, MultipartFile[] multipartFiles) throws Exception {
 
         Optional<Profile> profile = Optional.of(new Profile());
@@ -81,7 +94,7 @@ public class ProfileServiceImpl implements ProfileService {
 
         try {
             profileRepository.save(profile.get());
-        }catch (ExistsEntityException ex) {
+        } catch (ExistsEntityException ex) {
             throw new ExistsEntityException("Profile with id: " + profile.get().getId() + " already exists");
         }
 
@@ -175,7 +188,7 @@ public class ProfileServiceImpl implements ProfileService {
 
         try {
             profileRepository.deleteById(id);
-        }catch (Exception e) {
+        } catch (Exception e) {
             throw new EntityNotExistsException("Profile with id:" + id + " not found");
         }
 
@@ -204,7 +217,7 @@ public class ProfileServiceImpl implements ProfileService {
 
         Optional<Profile> profile = profileRepository.findById(id);
 
-        if(!profile.isPresent()) {
+        if (!profile.isPresent()) {
             throw new EntityNotExistsException("Profile with id: " + id + " not found");
         }
 
@@ -302,19 +315,28 @@ public class ProfileServiceImpl implements ProfileService {
         Pageable pageable = PageRequest.of(page, 2);
 
         if (city.isPresent() && type.isPresent()) {
-                return profileRepository.searchProfile(cityId, typeId, pageable);
+            return profileRepository.searchProfile(cityId, typeId, pageable);
         } else {
             return new ArrayList<>();
         }
     }
 
     @Override
-    public List<Profile> filterProfile(Long cityId, List<Long> genderIds, List<Long> ageIds, List<Long> sizeIds) {
+    public List<Profile> filterProfile(Long cityId, Long typeId, List<Long> genderIds, List<Long> ageIds, List<Long> sizeIds) {
 
-            return profileRepository.filterProfile(cityId, genderIds, ageIds, sizeIds);
+        if (genderIds.isEmpty()) {
+            genderIds = GENDER_IDS;
+        }
+        if (ageIds.isEmpty()) {
+            ageIds = AGE_IDS;
+        }
+        if (sizeIds.isEmpty()) {
+            sizeIds = SIZE_IDS;
+        }
+
+        return profileRepository.filterProfile(cityId, typeId, genderIds, ageIds, sizeIds);
 
     }
-
 
     private void mapFromDto(ProfileDto profileDto, Optional<Profile> profile) {
 
@@ -406,7 +428,7 @@ public class ProfileServiceImpl implements ProfileService {
         List<Long> healthIds = profile.get().getHealths().stream()
                 .map(Health::getId)
                 .collect(Collectors.toList());
-        // 1
+
         List<Health> healths = new ArrayList<>();
         if (profile.get().getHealths().size() == profileDto.getHealthIds().size()) {
             for (Long l : healthIds) {

@@ -101,7 +101,7 @@ public class ProfileController {
         }
 
         List<Profile> list =
-                profileService.filterProfile(filterDto.getCityId(), filterDto.getGenderIds(),
+                profileService.filterProfile(filterDto.getCityId(), filterDto.getTypeId(), filterDto.getGenderIds(),
                         filterDto.getAgeIds(), filterDto.getSizeIds());
 
         return new ApiResponse(list);
