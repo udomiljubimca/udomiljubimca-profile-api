@@ -81,7 +81,7 @@ public class Profile {
     private List<Image> images;
 
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL)
-    private List<UserInfo> likesList;
+    private List<UserInfo> favorites;
 
 
 

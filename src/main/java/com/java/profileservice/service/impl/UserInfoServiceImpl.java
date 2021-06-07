@@ -1,6 +1,7 @@
 package com.java.profileservice.service.impl;
 
 import com.java.profileservice.dto.UserInfoDto;
+import com.java.profileservice.exceptions.ExistsEntityException;
 import com.java.profileservice.model.Profile;
 import com.java.profileservice.model.UserInfo;
 import com.java.profileservice.repository.ProfileRepository;
@@ -24,23 +25,27 @@ public class UserInfoServiceImpl implements UserInfoService {
     @Override
     public UserInfo save(UserInfoDto userInfoDto) {
 
-        Optional<UserInfo> userInfo = Optional.of(new UserInfo());
+        UserInfo userInfo = mapFromUserInfoDto(userInfoDto);
 
-        mapFromUserInfoDto(userInfoDto, userInfo);
+        userInfoRepository.save(userInfo);
 
-        userInfoRepository.save(userInfo.get());
-
-        return  userInfo.get();
+        return userInfo;
 
     }
 
-    private void mapFromUserInfoDto(UserInfoDto userInfoDto, Optional<UserInfo> userInfo) {
+    private UserInfo mapFromUserInfoDto(UserInfoDto userInfoDto) {
 
-        userInfo.get().setUserId(userInfoDto.getUserId());
+        UserInfo userInfo = new UserInfo();
 
         Optional<Profile> profile = profileRepository.findById(userInfoDto.getProfileId());
 
-        userInfo.get().setProfile(profile.get());
+        if (profile.isPresent()) {
+            userInfo.setProfile(profile.get());
+            userInfo.setUserId(userInfoDto.getUserId());
+        } else {
+            throw new ExistsEntityException("Profile with id " + userInfoDto.getUserId() + " does not exist.");
+        }
 
+        return userInfo;
     }
 }

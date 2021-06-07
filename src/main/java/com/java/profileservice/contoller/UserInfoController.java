@@ -16,8 +16,15 @@ public class UserInfoController {
     @Autowired
     private UserInfoService userInfoService;
 
-    @PostMapping(value = "/likes")
-    public ApiResponse saveLikes(@RequestBody UserInfoDto userInfoDto) {
+    @PostMapping(value = "/like")
+    public ApiResponse saveLikes(@RequestBody UserInfoDto userInfoDto) throws Exception {
+
+        if (userInfoDto == null
+                || userInfoDto.getUserId() == null
+                || userInfoDto.getProfileId() == null) {
+            throw new Exception("Bad request!");
+        }
+
         return new ApiResponse(userInfoService.save(userInfoDto));
     }
 }
