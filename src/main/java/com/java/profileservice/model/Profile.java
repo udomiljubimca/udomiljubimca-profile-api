@@ -80,4 +80,9 @@ public class Profile {
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL)
     private List<Image> images;
 
+    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL)
+    private List<UserInfo> likesList;
+
+
+
 }
