@@ -71,12 +71,13 @@ public class ProfileServiceImpl implements ProfileService {
     private String cloudApiSecret;
 
     @PostConstruct
-    private void init(){
+    private void init() {
         AGE_IDS = ageRepository.getAllIds();
         GENDER_IDS = genderRepository.getAllIds();
         SIZE_IDS = sizeRepository.getAllIds();
     }
 
+    @Override
     public Profile saveProfile(ProfileDto profileDto, MultipartFile[] multipartFiles) throws Exception {
 
         Optional<Profile> profile = Optional.of(new Profile());
@@ -91,7 +92,7 @@ public class ProfileServiceImpl implements ProfileService {
         profile.get().setUploadDate(ZonedDateTime.now(ZoneId.of("GMT+2")));
 
         //cuvamo slike
-        List<Image> images = saveAndReturnImages(multipartFiles, profile);
+        List<Image> images = imageService.saveAndReturnImages(multipartFiles, profile);
         profile.get().setImages(images);
 
         try {
@@ -102,6 +103,187 @@ public class ProfileServiceImpl implements ProfileService {
 
 
         return profile.get();
+    }
+
+    @Override
+    public void deleteAll() throws Exception {
+
+        List<Image> images = imageService.getAll();
+
+        for (Image url : images) {
+            Cloudinary cloudinary = new Cloudinary(
+                    "cloudinary://" + cloudApiKey + ":" + cloudApiSecret + "@" + cloudName);
+            cloudinary.api().deleteResources(new ArrayList<>(
+                            Arrays.asList(url.getImageLink().substring(66, 86))),
+                    ObjectUtils.emptyMap());
+        }
+
+        profileRepository.deleteAll();
+    }
+
+    @Override
+    public void deleteById(Long id) throws Exception {
+
+        Optional<Profile> profile = profileRepository.findById(id);
+        if (profile.isPresent()) {
+            Cloudinary cloudinary = new Cloudinary(
+                    "cloudinary://" + cloudApiKey + ":" + cloudApiSecret + "@" + cloudName);
+            List<String> urls = profile.get().getImages()
+                    .stream().map(Image::getImageLink)
+                    .collect(Collectors.toList());
+
+            for (String url : urls) {
+                cloudinary.api().deleteResources(new ArrayList<>(
+                                Arrays.asList(url.substring(66, 86))),
+                        ObjectUtils.emptyMap());
+            }
+        }
+
+        try {
+            profileRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new EntityNotExistsException("Profile with id:" + id + " not found");
+        }
+
+    }
+
+    @Override
+    public Profile getProfileById(Long id) {
+
+        Optional<Profile> profile = profileRepository.findById(id);
+
+        if (!profile.isPresent()) {
+            throw new EntityNotExistsException("Profile with id: " + id + " not found");
+        }
+
+        return profile.get();
+    }
+
+    @Override
+    public List<Profile> getAllProfiles() {
+        return profileRepository.findAll();
+    }
+
+    @Override
+    public List<Profile> getAllByTypeId(Long typeId) {
+
+        Optional<Type> type = typeRepository.findById(typeId);
+
+        if (type.isPresent()) {
+            return profileRepository.findAllByTypeId(typeId);
+        } else {
+            return new ArrayList<>();
+        }
+
+    }
+
+    @Override
+    public List<Profile> getAllByCityId(Long cityId, int page) {
+
+        Optional<City> city = cityRepository.findById(cityId);
+        Pageable pageable = PageRequest.of(page, 2);
+
+        if (city.isPresent()) {
+            return profileRepository.findAllByCityId(cityId, pageable);
+        } else {
+            return new ArrayList<>();
+        }
+    }
+
+    @Override
+    public Profile updateProfile(Long id, ProfileDto profileDto) throws Exception {
+
+        Optional<Profile> profile = profileRepository.findById(id);
+        if (!profile.isPresent()) {
+            throw new EntityNotExistsException("Profile with id : " + id + " does not exist");
+        }
+
+        checkIfEntityUpdateAndSave(profileDto, profile);
+
+        mapFromDto(profileDto, profile);
+
+        profileRepository.save(profile.get());
+
+        return profile.get();
+    }
+
+    @Override
+    public List<Profile> profileSearch(long cityId, long typeId, int page) {
+
+        Optional<City> city = cityRepository.findById(cityId);
+        Optional<Type> type = typeRepository.findById(typeId);
+
+        Pageable pageable = PageRequest.of(page, 16);
+
+        if (city.isPresent() && type.isPresent()) {
+            return profileRepository.searchProfile(cityId, typeId, pageable);
+        } else {
+            return new ArrayList<>();
+        }
+    }
+
+    @Override
+    public List<Profile> filterProfile(Long cityId, Long typeId, List<Long> genderIds, List<Long> ageIds, List<Long> sizeIds) {
+
+        if (genderIds.isEmpty()) {
+            genderIds = GENDER_IDS;
+        }
+        if (ageIds.isEmpty()) {
+            ageIds = AGE_IDS;
+        }
+        if (sizeIds.isEmpty()) {
+            sizeIds = SIZE_IDS;
+        }
+
+        return profileRepository.filterProfile(cityId, typeId, genderIds, ageIds, sizeIds);
+
+    }
+
+    @Override
+    public List<Profile> getLastEightProfiles() {
+        return profileRepository.getLastEightProfiles();
+    }
+
+    @Override
+    public void saveProfile(Profile profile) {
+        profileRepository.save(profile);
+    }
+
+    private void mapFromDto(ProfileDto profileDto, Optional<Profile> profile) {
+
+        profile.get().setProfileName(profileDto.getProfileName());
+        profile.get().setAssociationName(profileDto.getAssociationName());
+        profile.get().setVaccinated(profileDto.isVaccinated());
+        profile.get().setSpecialHabits(profileDto.isSpecialHabits());
+        profile.get().setSpecialHabitsText(profileDto.getSpecialHabitsText());
+        profile.get().setDescription(profileDto.getDescription());
+        profile.get().setVideoLink(profileDto.getVideoLink());
+        profile.get().setGoodWithKids(profileDto.isGoodWithKids());
+        profile.get().setGoodWithDogs(profileDto.isGoodWithDogs());
+        profile.get().setGoodWithCats(profileDto.isGoodWithCats());
+        profile.get().setSpecialNeeds(profileDto.getSpecialNeeds());
+
+        if (!profileDto.isSpecialHabits()) {
+            profile.get().setSpecialHabitsText("");
+        }
+
+        List<Long> healthIds = Collections.emptyList();
+        if (!profile.get().getHealths().isEmpty() &&
+                profile.get().getHealths() != null) {
+            healthIds = profile.get().getHealths().stream()
+                    .map(Health::getId)
+                    .collect(Collectors.toList());
+        }
+        if (profile.get().isSpecialHabits()) {
+            profile.get().setSpecialHabitsText(profileDto.getSpecialHabitsText());
+        } else {
+            profile.get().setSpecialHabitsText("Ljubimac nema posebne navike.");
+        }
+        if (!healthIds.contains(2L)) {
+            profile.get().setSpecialNeeds("Ovaj ljubimac nema posebne potrebe.");
+        } else {
+            profile.get().setSpecialNeeds(profileDto.getSpecialNeeds());
+        }
     }
 
     private void saveEntitiesAndCheckIfExists(ProfileDto profileDto, Optional<Profile> profile) throws Exception {
@@ -151,234 +333,6 @@ public class ProfileServiceImpl implements ProfileService {
             List<Health> healthList =
                     healthRepository.getHealthByIds(profileDto.getHealthIds());
             profile.get().setHealths(healthList);
-        }
-    }
-
-    @Override
-    public void deleteAll() throws Exception {
-
-        List<Image> images = imageService.getAll();
-
-        for (Image url : images) {
-            Cloudinary cloudinary = new Cloudinary(
-                    "cloudinary://" + cloudApiKey + ":" + cloudApiSecret + "@" + cloudName);
-            cloudinary.api().deleteResources(new ArrayList<>(
-                            Arrays.asList(url.getImageLink().substring(66, 86))),
-                    ObjectUtils.emptyMap());
-        }
-
-        profileRepository.deleteAll();
-    }
-
-    @Override
-    public void deleteById(Long id) throws Exception {
-
-        Optional<Profile> profile = profileRepository.findById(id);
-        if (profile.isPresent()) {
-            Cloudinary cloudinary = new Cloudinary(
-                    "cloudinary://" + cloudApiKey + ":" + cloudApiSecret + "@" + cloudName);
-            List<String> urls = profile.get().getImages()
-                    .stream().map(Image::getImageLink)
-                    .collect(Collectors.toList());
-
-            for (String url : urls) {
-                cloudinary.api().deleteResources(new ArrayList<>(
-                                Arrays.asList(url.substring(66, 86))),
-                        ObjectUtils.emptyMap());
-            }
-        }
-
-        try {
-            profileRepository.deleteById(id);
-        } catch (Exception e) {
-            throw new EntityNotExistsException("Profile with id:" + id + " not found");
-        }
-
-    }
-
-
-    @Override
-    public String uploadImages(MultipartFile multipartFile) throws IOException {
-
-        File file = this.convertMultipartFileToFile(multipartFile);
-
-        Cloudinary cloudinary =
-                new Cloudinary("cloudinary://" + cloudApiKey + ":" + cloudApiSecret + "@" + cloudName);
-
-        Map<?, ?> result = cloudinary.uploader().upload(file, ObjectUtils.emptyMap());
-
-        String url = (String) result.get("secure_url");
-
-        file.delete();
-
-        return url;
-    }
-
-    @Override
-    public Profile getProfileById(Long id) {
-
-        Optional<Profile> profile = profileRepository.findById(id);
-
-        if (!profile.isPresent()) {
-            throw new EntityNotExistsException("Profile with id: " + id + " not found");
-        }
-
-        return profile.get();
-    }
-
-    @Override
-    public List<Profile> getAllProfiles() {
-        return profileRepository.findAll();
-    }
-
-    @Override
-    public List<Profile> getAllByTypeId(Long typeId) {
-
-        Optional<Type> type = typeRepository.findById(typeId);
-
-        if (type.isPresent()) {
-            return profileRepository.findAllByTypeId(typeId);
-        } else {
-            return new ArrayList<>();
-        }
-
-    }
-
-    @Override
-    public List<Profile> getAllByCityId(Long cityId, int page) {
-
-        Optional<City> city = cityRepository.findById(cityId);
-        Pageable pageable = PageRequest.of(page, 2);
-
-        if (city.isPresent()) {
-            return profileRepository.findAllByCityId(cityId, pageable);
-        } else {
-            return new ArrayList<>();
-        }
-    }
-
-    @Override
-    public Profile updateProfile(Long id, MultipartFile[] multipartFiles, String json) throws Exception {
-
-        ProfileDto profileDto;
-
-        //Check if profile exists
-        Optional<Profile> profile = profileRepository.findById(id);
-        if (!profile.isPresent()) {
-            throw new EntityNotExistsException("Profile with id : " + id + " does not exist");
-        }
-        //Check if images exists in request
-        if (multipartFiles.length == 0 && json.equalsIgnoreCase("empty")) {
-            throw new Exception("No updates!");
-        }
-        if (multipartFiles.length == 0) {
-            try {
-                profileDto = new ObjectMapper().readValue(json, ProfileDto.class);
-
-                checkIfEntityUpdateAndSave(profileDto, profile);
-
-                mapFromDto(profileDto, profile);
-
-            } catch (IOException e) {
-                throw new IOException(e.getMessage());
-            }
-            profileRepository.save(profile.get());
-        } else if (json.equalsIgnoreCase("empty")) {
-
-            List<Image> newImages = saveAndReturnImages(multipartFiles, profile);
-            profile.get().setImages(newImages);
-            profileRepository.save(profile.get());
-        } else {
-            try {
-                profileDto = new ObjectMapper().readValue(json, ProfileDto.class);
-
-                mapFromDto(profileDto, profile);
-
-                checkIfEntityUpdateAndSave(profileDto, profile);
-
-            } catch (IOException e) {
-                throw new IOException(e.getMessage());
-            }
-            List<Image> newImages = saveAndReturnImages(multipartFiles, profile);
-            profile.get().setImages(newImages);
-            profileRepository.save(profile.get());
-        }
-
-
-        return profile.get();
-    }
-
-    @Override
-    public List<Profile> profileSearch(long cityId, long typeId, int page) {
-
-        Optional<City> city = cityRepository.findById(cityId);
-        Optional<Type> type = typeRepository.findById(typeId);
-
-        Pageable pageable = PageRequest.of(page, 16);
-
-        if (city.isPresent() && type.isPresent()) {
-            return profileRepository.searchProfile(cityId, typeId, pageable);
-        } else {
-            return new ArrayList<>();
-        }
-    }
-
-    @Override
-    public List<Profile> filterProfile(Long cityId, Long typeId, List<Long> genderIds, List<Long> ageIds, List<Long> sizeIds) {
-
-        if (genderIds.isEmpty()) {
-            genderIds = GENDER_IDS;
-        }
-        if (ageIds.isEmpty()) {
-            ageIds = AGE_IDS;
-        }
-        if (sizeIds.isEmpty()) {
-            sizeIds = SIZE_IDS;
-        }
-
-        return profileRepository.filterProfile(cityId, typeId, genderIds, ageIds, sizeIds);
-
-    }
-
-    @Override
-    public List<Profile> getLastEightProfiles() {
-        return profileRepository.getLastEightProfiles();
-    }
-
-    private void mapFromDto(ProfileDto profileDto, Optional<Profile> profile) {
-
-        profile.get().setProfileName(profileDto.getProfileName());
-        profile.get().setAssociationName(profileDto.getAssociationName());
-        profile.get().setVaccinated(profileDto.isVaccinated());
-        profile.get().setSpecialHabits(profileDto.isSpecialHabits());
-        profile.get().setSpecialHabitsText(profileDto.getSpecialHabitsText());
-        profile.get().setDescription(profileDto.getDescription());
-        profile.get().setVideoLink(profileDto.getVideoLink());
-        profile.get().setGoodWithKids(profileDto.isGoodWithKids());
-        profile.get().setGoodWithDogs(profileDto.isGoodWithDogs());
-        profile.get().setGoodWithCats(profileDto.isGoodWithCats());
-        profile.get().setSpecialNeeds(profileDto.getSpecialNeeds());
-
-        if (!profileDto.isSpecialHabits()) {
-            profile.get().setSpecialHabitsText("");
-        }
-
-        List<Long> healthIds = Collections.emptyList();
-        if (!profile.get().getHealths().isEmpty() &&
-                profile.get().getHealths() != null) {
-            healthIds = profile.get().getHealths().stream()
-                    .map(Health::getId)
-                    .collect(Collectors.toList());
-        }
-        if (profile.get().isSpecialHabits()) {
-            profile.get().setSpecialHabitsText(profileDto.getSpecialHabitsText());
-        } else {
-            profile.get().setSpecialHabitsText("Ljubimac nema posebne navike.");
-        }
-        if (!healthIds.contains(2L)) {
-            profile.get().setSpecialNeeds("Ovaj ljubimac nema posebne potrebe.");
-        } else {
-            profile.get().setSpecialNeeds(profileDto.getSpecialNeeds());
         }
     }
 
@@ -451,50 +405,4 @@ public class ProfileServiceImpl implements ProfileService {
             profile.get().setHealths(healths);
         }
     }
-
-    private List<Image> saveAndReturnImages(MultipartFile[] multipartFiles, Optional<Profile> profile) {
-
-        if (profile.get().getImages() != null) {
-            if (profile.get().getImages().size() > 0) {
-                List<Long> imageIds = profile.get().getImages().stream()
-                        .map(Image::getId)
-                        .collect(Collectors.toList());
-
-                imageService.deleteImagesByIds(imageIds);
-            }
-        }
-        //save new images
-        List<Image> images = new ArrayList<>();
-        Arrays.asList(multipartFiles).stream().limit(3).forEach(multipartFile -> {
-            Image image = new Image();
-            try {
-                image.setImageLink(uploadImages(multipartFile));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            image.setProfile(profile.get());
-            images.add(image);
-
-        });
-        return images;
-    }
-
-    //Convert MultipartFile in File
-    public File convertMultipartFileToFile(MultipartFile multipartFile) {
-
-        File convFile = new File(multipartFile.getOriginalFilename());
-        try {
-            convFile.createNewFile();
-            FileOutputStream fos = new FileOutputStream(convFile);
-            fos.write(multipartFile.getBytes());
-            fos.close();
-
-        } catch (IOException e) {
-
-        }
-
-        return convFile;
-    }
-
-
 }

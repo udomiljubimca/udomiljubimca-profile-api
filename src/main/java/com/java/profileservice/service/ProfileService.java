@@ -15,8 +15,6 @@ public interface ProfileService {
 
     void deleteById(Long id) throws Exception;
 
-    String uploadImages(MultipartFile multipartFile) throws IOException;
-
     Profile getProfileById(Long id);
 
     List<Profile> getAllProfiles();
@@ -25,11 +23,14 @@ public interface ProfileService {
 
     List<Profile> getAllByCityId(Long cityId, int page);
 
-    Profile updateProfile(Long id, MultipartFile[] multipartFiles, String json) throws Exception;
+    Profile updateProfile(Long id, ProfileDto profileDto) throws Exception;
 
     List<Profile> profileSearch(long cityId, long typeId, int page);
 
     List<Profile> filterProfile(Long cityId, Long typeId, List<Long> genderIds, List<Long> ageIds, List<Long> sizeIds);
 
+    void saveProfile(Profile profile);
+
     List<Profile> getLastEightProfiles();
+
 }

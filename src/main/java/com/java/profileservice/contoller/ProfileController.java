@@ -116,16 +116,12 @@ public class ProfileController {
 
     @PutMapping("/{id}")
     public ApiResponse updateProfile(@PathVariable(name = "id") Long id,
-                                     @RequestParam(value = "files", required = false) MultipartFile[] multipartFiles,
-                                     @RequestParam(value = "json", required = false) String json)
+                                     @RequestBody ProfileDto profileDto)
             throws Exception {
-        if (multipartFiles == null) {
-            multipartFiles = new MultipartFile[0];
+        if (profileDto == null) {
+            throw new Exception("Bad request!");
         }
-        if (json == null || json.equalsIgnoreCase("")) {
-            json = "empty";
-        }
-        Profile profile = profileService.updateProfile(id, multipartFiles, json);
+        Profile profile = profileService.updateProfile(id, profileDto);
         return new ApiResponse(profile);
     }
 
