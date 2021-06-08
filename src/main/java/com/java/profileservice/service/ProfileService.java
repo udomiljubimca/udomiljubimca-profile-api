@@ -30,4 +30,6 @@ public interface ProfileService {
     List<Profile> profileSearch(long cityId, long typeId, int page);
 
     List<Profile> filterProfile(Long cityId, Long typeId, List<Long> genderIds, List<Long> ageIds, List<Long> sizeIds);
+
+    List<Profile> getLastEightProfiles();
 }

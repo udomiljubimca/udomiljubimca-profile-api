@@ -20,4 +20,7 @@ public interface ProfileRepository extends JpaRepository<Profile, Long> {
 
     @Query("select p from Profile p where p.city.id = :cityId and p.type.id = :typeId and p.gender.id in (:genderIds) and p.age.id in (:ageIds) and p.size.id in (:sizeIds)")
     List<Profile> filterProfile(Long cityId,Long typeId, List<Long> genderIds, List<Long> ageIds, List<Long> sizeIds);
+
+    @Query(nativeQuery = true, value = "select * from profile order by date desc limit 8")
+    List<Profile> getLastEightProfiles();
 }

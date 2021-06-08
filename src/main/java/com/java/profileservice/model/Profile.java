@@ -1,5 +1,6 @@
 package com.java.profileservice.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -7,6 +8,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Entity
@@ -45,7 +47,9 @@ public class Profile {
     private boolean goodWithCats;
 
     @DateTimeFormat(pattern = "dd-MM-yyyy")
-    private Date uploadDate;
+    @Column(name ="date")
+    @JsonFormat(pattern = "dd-MM-yyyy")
+    private ZonedDateTime uploadDate;
 
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
