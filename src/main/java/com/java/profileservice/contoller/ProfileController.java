@@ -129,5 +129,12 @@ public class ProfileController {
         return new ApiResponse(profile);
     }
 
+    @GetMapping("/home")
+    public ApiResponse getLastEightProfiles() {
+        List<Profile> list = profileService.getLastEightProfiles();
+        return new ApiResponse(list);
+
+    }
+
 
 }

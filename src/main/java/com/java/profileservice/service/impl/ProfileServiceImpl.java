@@ -22,6 +22,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Date;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -86,7 +88,7 @@ public class ProfileServiceImpl implements ProfileService {
         mapFromDto(profileDto, profile);
 
         //setujemo date
-        profile.get().setUploadDate(new Date(new java.util.Date().getTime()));
+        profile.get().setUploadDate(ZonedDateTime.now(ZoneId.of("GMT+2")));
 
         //cuvamo slike
         List<Image> images = saveAndReturnImages(multipartFiles, profile);
@@ -312,7 +314,7 @@ public class ProfileServiceImpl implements ProfileService {
         Optional<City> city = cityRepository.findById(cityId);
         Optional<Type> type = typeRepository.findById(typeId);
 
-        Pageable pageable = PageRequest.of(page, 2);
+        Pageable pageable = PageRequest.of(page, 16);
 
         if (city.isPresent() && type.isPresent()) {
             return profileRepository.searchProfile(cityId, typeId, pageable);
@@ -336,6 +338,11 @@ public class ProfileServiceImpl implements ProfileService {
 
         return profileRepository.filterProfile(cityId, typeId, genderIds, ageIds, sizeIds);
 
+    }
+
+    @Override
+    public List<Profile> getLastEightProfiles() {
+        return profileRepository.getLastEightProfiles();
     }
 
     private void mapFromDto(ProfileDto profileDto, Optional<Profile> profile) {
