@@ -21,7 +21,7 @@ public class Image {
 
     private String imageLink;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = {CascadeType.DETACH,CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH})
     @JsonIgnore
     private Profile profile;
 
