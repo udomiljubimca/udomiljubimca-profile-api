@@ -5,7 +5,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/profiledatabase?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
     username: postgres
-    password: user
+    password: password
   jpa:
     show-sql: true
     hibernate:
@@ -26,3 +26,232 @@ cloudinary:
   cloud_name: udomiljubimca
   api_key: 372925527928556
   api_secret: Jd4I_wLdRvCGWPuSJBcK68474Ig
+
+#==================Swagger2 properties================
+
+#Save profile route
+operation1:
+  description: Used to save new profile by providing multipart files(pictures) and json(ProfileDto)
+  value: Save new profile
+  responseContainer: Profile
+
+#Get profile by id route
+operation2:
+  description: Used to get profile using profile id
+  value: Get profile by id
+  responseContainer: Profile
+
+#Get all profiles route
+operation3:
+  description: Used to get all profiles
+  value: Get all profiles
+  responseContainer: List of profiles
+
+#Get profiles by type id route
+operation4:
+  description: Used to get all profiles with this type id
+  value: Get all profile by type id
+  responseContainer: List of profiles with this type
+
+#Get profiles by city id route
+operation5:
+  description: Used to get all profiles with this city id
+  value: Get all profiles by city id
+  responseContainer: All profiles in this city id
+
+#Initial search route
+operation6:
+  description: Used to get all profiles by providing ProfileSearchDto and number of page
+  value: Initial search for profiles
+
+#Filter route
+operation7:
+  description: Used for filtering of profiles by providing FilterDto
+  value: Filter for profiles
+
+#Delete profile route
+operation8:
+  description: Delete profile by providing profile id
+  value: Delete profile
+
+#Update profile route
+operation9:
+  description: Update profile by providing profile id
+  value: Update profile
+  responseContainer: Profile
+
+#Last eight profiles route
+operation10:
+  description: Used to get last eight saved profiles ordered by upload date
+  value: Get last eight saved profiles
+
+#Get all ages route
+operation11:
+  description: Used to get all ages
+  value: Get all ages
+
+#Get all cities route
+operation12:
+  description: Used to get all cities
+  value: Get all cities
+
+#Get all genders route
+operation13:
+  description: Used to get all genders
+  value: Get all genders
+
+#Get all healths route
+operation14:
+  description: Used to get all healths
+  value: Get all healths
+
+#Delete image route
+operation15:
+  description: Used to delete image by providing image id
+  value: Delete image
+
+#Save image route
+operation16:
+  description: Used to save image by providing multipart files(images) and profile id
+  value: Save image
+
+#Get all natures route
+operation17:
+  description: Used to get all natures
+  value: Get all natures
+
+#Get all sizes route
+operation18:
+  description: Used to get all sizes
+  value: Get all sizes
+
+#Get all types route
+operation19:
+  description: Used to get all types
+  value: Get all types
+
+#Get all likes route
+operation20:
+  description: Used to get all likes of some user by providing UserInfoDto
+  value: Get all likes for user
+
+#Age
+Age:
+  id: Age id
+  ageName: Age name
+
+#City
+City:
+  id: City id
+  cityName: City name
+  cityZipcode: City zip code
+
+#Gender
+Gender:
+  id: Gender id
+  genderName: Gender name
+
+#Health
+Health:
+  id: Health id
+  name: Health name
+  profiles: List od profiles
+
+#Image
+Image:
+  id: Image id
+  link: Image link
+  profile: Profile id
+
+#Nature
+Nature:
+  id: Nature id
+  name: Nature name
+
+#Profile
+Profile:
+  id: Profile id
+  profileName: Profile name
+  associationName: Association name
+  vaccinated: Vaccine information
+  videoLink: Video link
+  profileDescription: Profile description
+  specialHabits: Speacial habits
+  specialHabitsText: Special habits text
+  specialNeeds: Special needs
+  goodWithKids: Good with kids
+  goodWithDogs: Good with dogs
+  goodWithCats: Good with cats
+  date: Upload date
+  age: Age id
+  city: City id
+  gender: Gender id
+  healths: List of healths
+  nature: Nature id
+  size: Size id
+  type: Type id
+  images: List of images
+  favourites: List of likes
+
+#Size
+Size:
+  id: Size id
+  name: Size name
+
+#Type
+Type:
+  id: Type id
+  name: Type name
+
+#UserInfo
+UserInfo:
+  id: User info id
+  userId: User id
+  profiles: List of liked profiles
+
+#FilterDto
+FilterDto:
+  cityId: City id
+  typeId: Type id
+  genderIds: List of gender ids
+  ageIds: List of age ids
+  sizeIds: List of size ids
+
+#ProfileDto
+ProfileDto:
+  association: Association name
+  profileName: Profile name
+  desciption: Profile description
+  videoLink: Video link
+  specialHabitsText: Special habits text
+  specialNeeds: Special needs
+  specialHabits: Speacial habits
+  vaccinated: Vaccine information
+  goodWithKids: Good with kids
+  goodWithDogs: Good with dogs
+  goodWithCats: Good with cats
+  ageId: Age id
+  cityId: City id
+  genderId: Gender id
+  natureId: Nature id
+  sizeId: Size id
+  typeId: Type id
+  healths: List of health ids
+
+#ProfileSearchDto
+ProfileSearchDto:
+  cityId: City id
+  typeId: Type id
+
+#UserInfoDto
+UserInfoDto:
+  userId: User id
+  profileId: Profile id
+
+#ApiResponse
+ApiResponse:
+  status: Response status
+  data: Response data
+
+
+

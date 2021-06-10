@@ -1,6 +1,8 @@
 package com.java.profileservice.model;
 
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
 import javax.persistence.Entity;
@@ -15,12 +17,15 @@ import javax.persistence.Id;
 @Builder
 @ToString
 @EqualsAndHashCode
+@ApiModel(description = "Type details")
 public class Type {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @ApiModelProperty(value = "${Type.id}")
     private long id;
 
+    @ApiModelProperty(value = "${Type.name}")
     private String typeName;
 
     public Type(String typeName) {
