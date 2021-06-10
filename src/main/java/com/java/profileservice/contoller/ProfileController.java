@@ -39,7 +39,8 @@ public class ProfileController {
     @ApiOperation(
             notes = "${operation1.description}",
             value = "${operation1.value}",
-            responseContainer = "${operation1.responseContainer}"
+            responseContainer = "${operation1.responseContainer}",
+            response = Profile.class
     )
     public ApiResponse saveProfile(
             @RequestParam(value = "files", required = false) MultipartFile[] multipartFiles,
@@ -81,6 +82,7 @@ public class ProfileController {
     @ApiOperation(
             notes = "${operation3.description}",
             value = "${operation3.value}"
+
     )
     public ApiResponse allProfiles() {
         List<Profile> allProfiles = profileService.getAllProfiles();
@@ -158,6 +160,7 @@ public class ProfileController {
     @ApiOperation(
             notes = "${operation9.description}",
             value = "${operation9.value}",
+            responseContainer = "${operation9.responseContainer}",
             response = Profile.class
     )
     public ApiResponse updateProfile(@PathVariable(name = "id") Long id,

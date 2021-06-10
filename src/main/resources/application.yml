@@ -45,19 +45,17 @@ operation2:
 operation3:
   description: Used to get all profiles
   value: Get all profiles
-  responseContainer: List of profiles
 
 #Get profiles by type id route
 operation4:
   description: Used to get all profiles with this type id
   value: Get all profile by type id
-  responseContainer: List of profiles with this type
+
 
 #Get profiles by city id route
 operation5:
   description: Used to get all profiles with this city id
   value: Get all profiles by city id
-  responseContainer: All profiles in this city id
 
 #Initial search route
 operation6:
