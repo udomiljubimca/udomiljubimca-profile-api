@@ -16,10 +16,16 @@ import javax.persistence.Id;
 @EqualsAndHashCode
 public class Coexistence {
 
+    /**
+     * unique coexistence id, auto generated
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    /**
+     * coexistence name
+     */
     private String coexistenceName;
 
     public Coexistence(String coexistenceName) {

@@ -14,6 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * City controller for Adopt a pet project
+ * Acceptance criterias:
+ * 1)get all cities
+ */
 @RestController
 @RequestMapping(value = "/city")
 @Api(tags = {"City controller"})
@@ -22,6 +27,11 @@ public class CityController {
     @Autowired
     public CityService cityService;
 
+    /**
+     * 1) Get all cities route uses to get all cities
+     *
+     * @return List<City>
+     */
     @GetMapping("/all")
     @ApiOperation(
             notes = "${operation12.description}",

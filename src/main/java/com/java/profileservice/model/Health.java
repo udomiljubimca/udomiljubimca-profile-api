@@ -19,14 +19,23 @@ import java.util.List;
 @ApiModel(description = "Health details")
 public class Health {
 
+    /**
+     * unique health id, auto generated
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @ApiModelProperty(value = "${Health.id}")
     private long id;
 
+    /**
+     * health name
+     */
     @ApiModelProperty(value = "${Health.name}")
     private String name;
 
+    /**
+     * list of profiles
+     */
     @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinTable(name = "Profile_Health", joinColumns = @JoinColumn(name = "idHealth"), inverseJoinColumns = @JoinColumn(name = "idProfile"))
     @JsonIgnore

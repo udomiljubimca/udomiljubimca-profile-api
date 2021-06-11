@@ -14,6 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * Age controller for Adopt a pet project
+ * Acceptance criterias:
+ * 1)get all ages
+ */
 @RestController
 @RequestMapping(value = "/age")
 @Api(tags = {"Age controller"})
@@ -22,6 +27,11 @@ public class AgeController {
     @Autowired
     public AgeService ageService;
 
+    /**
+     * 1) Get all ages route uses to get all ages
+     *
+     * @return List<Age>
+     */
     @GetMapping("/all")
     @ApiOperation(
             notes = "${operation11.description}",

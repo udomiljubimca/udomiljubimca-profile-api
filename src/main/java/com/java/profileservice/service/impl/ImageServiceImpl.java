@@ -48,6 +48,11 @@ public class ImageServiceImpl implements ImageService {
         return imageRepository.findAll();
     }
 
+    /**
+     * Delete image by id
+     *
+     * @param imageId
+     */
     @Override
     public void deleteImageById(Long imageId) throws Exception {
 
@@ -67,11 +72,21 @@ public class ImageServiceImpl implements ImageService {
         imageRepository.deleteById(imageId);
     }
 
+    /**
+     * Delete images by list of ids
+     *
+     * @param ids
+     */
     @Override
     public void deleteImagesByIds(List<Long> ids) {
         imageRepository.deleteByIds(ids);
     }
 
+    /**
+     * Upload image
+     *
+     * @param multipartFiles, profileId
+     */
     @Override
     public void uploadImages(MultipartFile[] multipartFiles, Long profileId) {
 
@@ -103,6 +118,12 @@ public class ImageServiceImpl implements ImageService {
         profileService.saveProfile(profile.get());
     }
 
+    /**
+     * Save and return images
+     *
+     * @param multipartFiles, profile
+     * @return List<Image>
+     */
     @Override
     public List<Image> saveAndReturnImages(MultipartFile[] multipartFiles, Optional<Profile> profile) {
 
@@ -121,6 +142,12 @@ public class ImageServiceImpl implements ImageService {
         return images;
     }
 
+    /**
+     * Upload image on cloudinary
+     *
+     * @param multipartFile
+     * @return String (image url)
+     */
     private String uploadOnCloudinary(MultipartFile multipartFile) throws IOException {
 
         File file = this.convertMultipartFileToFile(multipartFile);
@@ -137,6 +164,11 @@ public class ImageServiceImpl implements ImageService {
         return url;
     }
 
+    /**
+     * Delete image from clodinary
+     *
+     * @param imageLink
+     */
     private void deleteImageFromCloudinary(String imageLink) throws Exception {
 
         Cloudinary cloudinary = new Cloudinary(
@@ -147,6 +179,11 @@ public class ImageServiceImpl implements ImageService {
                 ObjectUtils.emptyMap());
     }
 
+    /**
+     * Convert multipart file to file
+     *
+     * @param multipartFile
+     */
     //Convert MultipartFile in File
     public File convertMultipartFileToFile(MultipartFile multipartFile) {
 

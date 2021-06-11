@@ -14,6 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * Type controller for Adopt a pet project
+ * Acceptance criterias:
+ * 1)get all types
+ */
 @RestController
 @RequestMapping("/type")
 @Api(tags = {"Type controller"})
@@ -22,6 +27,11 @@ public class TypeController {
     @Autowired
     public TypeService typeService;
 
+    /**
+     * 1) Get all types route uses to get all types
+     *
+     * @return List<Type>
+     */
     @GetMapping("/all")
     @ApiOperation(
             notes = "${operation19.description}",

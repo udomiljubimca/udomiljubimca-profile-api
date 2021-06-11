@@ -20,11 +20,17 @@ import javax.persistence.Id;
 @ApiModel(description = "Size details")
 public class Size {
 
+    /**
+     * unique size id, auto generated
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @ApiModelProperty(value = "${Size.id}")
     private long id;
 
+    /**
+     * size name
+     */
     @ApiModelProperty(value = "${Size.name}")
     private String sizeName;
 

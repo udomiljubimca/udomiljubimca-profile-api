@@ -20,11 +20,17 @@ import javax.persistence.Id;
 @ApiModel(description = "Type details")
 public class Type {
 
+    /**
+     * unique type id, auto generated
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @ApiModelProperty(value = "${Type.id}")
     private long id;
 
+    /**
+     * type name
+     */
     @ApiModelProperty(value = "${Type.name}")
     private String typeName;
 

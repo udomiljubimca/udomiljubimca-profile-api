@@ -19,11 +19,17 @@ import javax.persistence.Id;
 @ApiModel(description = "Gender details")
 public class Gender {
 
+    /**
+     * unique gender id, auto generated
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @ApiModelProperty(value = "${Gender.id}")
     private long id;
 
+    /**
+     * gender name
+     */
     @ApiModelProperty(value = "${Gender.genderName}")
     private String genderName;
 

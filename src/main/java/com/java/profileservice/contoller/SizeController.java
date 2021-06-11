@@ -14,6 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * Size controller for Adopt a pet project
+ * Acceptance criterias:
+ * 1)get all sizes
+ */
 @RestController
 @RequestMapping("/size")
 @Api(tags = {"Size controller"})
@@ -22,6 +27,11 @@ public class SizeController {
     @Autowired
     public SizeService sizeService;
 
+    /**
+     * 1) Get all sizes route uses to get all sizes
+     *
+     * @return List<Size>
+     */
     @GetMapping("/all")
     @ApiOperation(
             notes = "${operation18.description}",

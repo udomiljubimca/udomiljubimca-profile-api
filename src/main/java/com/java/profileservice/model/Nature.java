@@ -20,11 +20,17 @@ import javax.persistence.Id;
 @ApiModel(description = "Nature details")
 public class Nature {
 
+    /**
+     * unique nature id, auto generated
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @ApiModelProperty(value = "${Nature.id}")
     private long id;
 
+    /**
+     * nature name
+     */
     @ApiModelProperty(value = "${Nature.name}")
     private String natureName;
 

@@ -13,9 +13,15 @@ import lombok.*;
 @ApiModel(description = "Profile search Dto details")
 public class ProfileSearchDto {
 
+    /**
+     * city id
+     */
     @ApiModelProperty(value = "${ProfileSearchDto.cityId}")
     private long cityId;
 
+    /**
+     * type id
+     */
     @ApiModelProperty(value = "${ProfileSearchDto.typeId}")
     private long typeId;
 }

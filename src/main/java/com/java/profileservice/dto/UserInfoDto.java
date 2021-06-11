@@ -14,9 +14,15 @@ import lombok.*;
 @ApiModel(description = "User info Dto details")
 public class UserInfoDto {
 
+    /**
+     * user id
+     */
     @ApiModelProperty(value = "${UserInfoDto.userId}")
     private Long userId;
 
+    /**
+     * profile id
+     */
     @ApiModelProperty(value = "${UserInfoDto.profileId}")
     private Long profileId;
 }

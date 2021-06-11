@@ -15,21 +15,37 @@ public class SizeServiceImpl implements SizeService {
     @Autowired
     private SizeRepository sizeRepository;
 
+    /**
+     * Save size into database
+     */
     @Override
     public void save(Size size) {
         sizeRepository.save(size);
     }
 
+    /**
+     * Delete all sizes from database
+     */
     @Override
     public void deleteAll() {
         sizeRepository.deleteAll();
     }
 
+    /**
+     * Save all sizes into database
+     *
+     * @param sizeList
+     */
     @Override
     public void saveAll(List<Size> sizeList) {
         sizeRepository.saveAll(sizeList);
     }
 
+    /**
+     * Get all sizes from database
+     *
+     * @return List<Size>
+     */
     @Override
     public List<Size> getAllSizes() {
         List<Size> sizeList = sizeRepository.findAll();
