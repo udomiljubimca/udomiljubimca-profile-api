@@ -2,7 +2,6 @@ package com.java.profileservice.service.impl;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.java.profileservice.dto.ProfileDto;
 import com.java.profileservice.exceptions.EntityNotExistsException;
 import com.java.profileservice.exceptions.ExistsEntityException;
@@ -18,10 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.sql.Date;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
@@ -72,6 +67,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     /**
      * Initialize ageIds, genderIds, sizeIds
+     * Method should get all ids from database
      */
     @PostConstruct
     private void init() {
@@ -83,7 +79,8 @@ public class ProfileServiceImpl implements ProfileService {
     /**
      * Save profile into database
      *
-     * @param profileDto, multipartFiles
+     * @param profileDto - Object form FE
+     * @param multipartFiles - Images
      * @return Profile
      */
     @Override
@@ -136,7 +133,7 @@ public class ProfileServiceImpl implements ProfileService {
     /**
      * Delete profile from database using id
      *
-     * @param id
+     * @param id - id of the Profile
      */
     @Override
     public void deleteById(Long id) throws Exception {
@@ -167,7 +164,7 @@ public class ProfileServiceImpl implements ProfileService {
     /**
      * Get profile from database using id
      *
-     * @param id
+     * @param id - id of the Profile
      * @return Profile
      */
     @Override
@@ -208,7 +205,8 @@ public class ProfileServiceImpl implements ProfileService {
     /**
      * Get profiles from database using cityId
      *
-     * @param cityId, page
+     * @param cityId - city id
+     * @param page - number of page
      * @return List<Profile>
      */
     @Override
@@ -227,7 +225,8 @@ public class ProfileServiceImpl implements ProfileService {
     /**
      * Update profile
      *
-     * @param id, profileDto
+     * @param id - profile id
+     * @param profileDto - profile form FE
      * @return Profile
      */
     @Override
@@ -250,7 +249,8 @@ public class ProfileServiceImpl implements ProfileService {
     /**
      * Search profiles using cityId and typeId
      *
-     * @param cityId, typeId
+     * @param cityId - city id
+     * @param typeId - type id
      * @return List<Profile>
      */
     @Override
@@ -271,7 +271,11 @@ public class ProfileServiceImpl implements ProfileService {
     /**
      * Filter profiles
      *
-     * @param cityId, typeId, genderIds, ageIds, sizeIds
+     * @param cityId - city id
+     * @param typeId - type id
+     * @param genderIds - list of gender ids
+     * @param ageIds - list of age ids
+     * @param sizeIds - list of size ids
      * @return List<Profile>
      */
     @Override
@@ -304,7 +308,7 @@ public class ProfileServiceImpl implements ProfileService {
     /**
      * Save profile into database
      *
-     * @param profile
+     * @param profile - profile to be saved
      */
     @Override
     public void saveProfile(Profile profile) {
@@ -314,7 +318,8 @@ public class ProfileServiceImpl implements ProfileService {
     /**
      * Map from ProfileDto to Profile
      *
-     * @param profileDto, profile
+     * @param profileDto - profileDto
+     * @param profile - profile
      */
     private void mapFromDto(ProfileDto profileDto, Optional<Profile> profile) {
 
@@ -356,7 +361,8 @@ public class ProfileServiceImpl implements ProfileService {
     /**
      * Check if entities exist
      *
-     * @param profileDto, profile
+     * @param profileDto - profileDto
+     * @param profile - profile
      */
     private void saveEntitiesAndCheckIfExists(ProfileDto profileDto, Optional<Profile> profile) throws Exception {
         Optional<Age> age = ageRepository.findById(profileDto.getAgeId());
@@ -411,7 +417,8 @@ public class ProfileServiceImpl implements ProfileService {
     /**
      * Check if entities are updated
      *
-     * @param profileDto, profile
+     * @param profileDto - profileDto
+     * @param profile - profile
      */
     private void checkIfEntityUpdateAndSave(ProfileDto profileDto, Optional<Profile> profile) throws Exception {
         if (profile.get().getNature().getId() != profileDto.getNatureId()) {
