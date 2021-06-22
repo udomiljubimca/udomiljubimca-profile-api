@@ -24,6 +24,20 @@ import java.util.List;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
+/**
+ * Profile controller for Adopt a pet project
+ * Acceptance criterias:
+ * 1) save profile
+ * 2) get profile by id
+ * 3) get all profiles
+ * 4) get all profiles by type id
+ * 5) get all profiles by city id
+ * 6) initial search of profile
+ * 7) filter profile
+ * 8) delete profile by id
+ * 9) update profile
+ * 10) get last eigth saved profiles
+ */
 @RestController
 @RequestMapping(value = "/profile")
 @Api(tags = {"Profile controller"})
@@ -34,6 +48,13 @@ public class ProfileController {
     @Autowired
     public ProfileService profileService;
 
+
+    /**
+     * 1) Save profile route uses to save profile
+     *
+     * @param multipartFiles, json
+     * @return Profile
+     */
     @PostMapping(value = "/save", consumes =
             {MULTIPART_FORM_DATA_VALUE, APPLICATION_JSON_VALUE})
     @ApiOperation(
@@ -66,6 +87,12 @@ public class ProfileController {
         return new ApiResponse(profileService.saveProfile(profileDto, multipartFiles));
     }
 
+    /**
+     * 2) Get profile by id route uses to get profile by id
+     *
+     * @param id
+     * @return Profile
+     */
     @GetMapping("/{id}")
     @ApiOperation(
             notes = "${operation2.description}",
@@ -78,6 +105,11 @@ public class ProfileController {
         return new ApiResponse(profile);
     }
 
+    /**
+     * 3) Get all profiles route uses to get all profiles
+     *
+     * @return List<Profile>
+     */
     @GetMapping("/all")
     @ApiOperation(
             notes = "${operation3.description}",
@@ -89,6 +121,12 @@ public class ProfileController {
         return new ApiResponse(allProfiles);
     }
 
+    /**
+     * 4) Get all profiles by id route uses to get all profiles by type id
+     *
+     * @param id
+     * @return List<Profile>
+     */
     @GetMapping("/type/{id}")
     @ApiOperation(
             notes = "${operation4.description}",
@@ -99,6 +137,12 @@ public class ProfileController {
         return new ApiResponse(list);
     }
 
+    /**
+     * 5) Get all by city id route uses to get all profiles by city id
+     *
+     * @param id, page
+     * @return List<Profile>
+     */
     @GetMapping("/city/{id}")
     @ApiOperation(
             notes = "${operation5.description}",
@@ -110,6 +154,12 @@ public class ProfileController {
         return new ApiResponse(list);
     }
 
+    /**
+     * 6) Search profiles route uses to search profiles using profileSearchDto
+     *
+     * @param profileSearchDto, page
+     * @return List<Profile>
+     */
     @GetMapping(value = "/initialSearch")
     @ApiOperation(
             notes = "${operation6.description}",
@@ -128,6 +178,12 @@ public class ProfileController {
         return new ApiResponse(list);
     }
 
+    /**
+     * 7) Filter profile route uses to filter profiles using filterDto
+     *
+     * @param filterDto
+     * @return List<Profile>
+     */
     @GetMapping(value = "/filter")
     @ApiOperation(
             notes = "${operation7.description}",
@@ -145,7 +201,11 @@ public class ProfileController {
         return new ApiResponse(list);
     }
 
-
+    /**
+     * 8) Delete profile route uses to delete using id
+     *
+     * @param id
+     */
     @DeleteMapping("/{id}")
     @ApiOperation(
             notes = "${operation8.description}",
@@ -156,6 +216,12 @@ public class ProfileController {
         return new ApiResponse("Profile is successfully deleted!");
     }
 
+    /**
+     * 9) Update profile route uses to update profile
+     *
+     * @param id, profileDto
+     * @return Profile
+     */
     @PutMapping("/{id}")
     @ApiOperation(
             notes = "${operation9.description}",
@@ -172,6 +238,11 @@ public class ProfileController {
         Profile profile = profileService.updateProfile(id, profileDto);
         return new ApiResponse(profile);
     }
+    /**
+     * 10) Get last eight profiles route uses to get last eight saved profiles sorted by upload date
+     *
+     * @return List<Profile>
+     */
 
     @GetMapping("/home")
     @ApiOperation(

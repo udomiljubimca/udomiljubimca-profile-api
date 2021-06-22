@@ -20,14 +20,23 @@ import javax.persistence.Id;
 @ApiModel(description = "City details")
 public class City {
 
+    /**
+     * unique city id, auto generated
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @ApiModelProperty(value = "${City.id}")
     private long id;
 
+    /**
+     * city name
+     */
     @ApiModelProperty(value = "${City.cityName}")
     private String cityName;
 
+    /**
+     * city zip code
+     */
     @ApiModelProperty(value = "${City.cityZipcode}")
     private String cityZipcode;
 

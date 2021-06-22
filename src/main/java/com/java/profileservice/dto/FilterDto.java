@@ -18,18 +18,33 @@ import java.util.List;
 @ApiModel(description = "Filter Dto Details")
 public class FilterDto {
 
+    /**
+     * city id
+     */
     @ApiModelProperty(value = "${FilterDto.cityId}")
     private Long cityId;
 
+    /**
+     * type id
+     */
     @ApiModelProperty(value = "${FilterDto.typeId}")
     private Long typeId;
 
+    /**
+     * list of gender ids
+     */
     @ApiModelProperty(value = "${FilterDto.genderIds}")
     private List<Long> genderIds = Collections.emptyList();
 
+    /**
+     * list of age ids
+     */
     @ApiModelProperty(value = "${FilterDto.ageIds}")
     private List<Long> ageIds = Collections.emptyList();
 
+    /**
+     * list of size ids
+     */
     @ApiModelProperty(value = "${FilterDto.sizeIds}")
     private List<Long> sizeIds = Collections.emptyList();
 

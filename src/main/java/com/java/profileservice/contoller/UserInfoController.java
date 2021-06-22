@@ -13,6 +13,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * User Info controller for Adopt a pet project
+ * Acceptance criterias:
+ * 1) save likes
+ */
 @RestController
 @RequestMapping(value = "/user")
 @Api(tags = {"User info controller"})
@@ -21,6 +26,12 @@ public class UserInfoController {
     @Autowired
     private UserInfoService userInfoService;
 
+    /**
+     * 1) Save likes route uses to save likes
+     *
+     * @param userInfoDto
+     * @return UserInfo
+     */
     @PostMapping(value = "/like")
     @ApiOperation(
             notes = "${operation20.description}",

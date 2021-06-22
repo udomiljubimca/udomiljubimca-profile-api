@@ -70,6 +70,9 @@ public class ProfileServiceImpl implements ProfileService {
     @Value("${cloudinary.api_secret}")
     private String cloudApiSecret;
 
+    /**
+     * Initialize ageIds, genderIds, sizeIds
+     */
     @PostConstruct
     private void init() {
         AGE_IDS = ageRepository.getAllIds();
@@ -77,6 +80,12 @@ public class ProfileServiceImpl implements ProfileService {
         SIZE_IDS = sizeRepository.getAllIds();
     }
 
+    /**
+     * Save profile into database
+     *
+     * @param profileDto, multipartFiles
+     * @return Profile
+     */
     @Override
     public Profile saveProfile(ProfileDto profileDto, MultipartFile[] multipartFiles) throws Exception {
 
@@ -105,6 +114,9 @@ public class ProfileServiceImpl implements ProfileService {
         return profile.get();
     }
 
+    /**
+     * Delete all profiles from database
+     */
     @Override
     public void deleteAll() throws Exception {
 
@@ -121,6 +133,11 @@ public class ProfileServiceImpl implements ProfileService {
         profileRepository.deleteAll();
     }
 
+    /**
+     * Delete profile from database using id
+     *
+     * @param id
+     */
     @Override
     public void deleteById(Long id) throws Exception {
 
@@ -147,6 +164,12 @@ public class ProfileServiceImpl implements ProfileService {
 
     }
 
+    /**
+     * Get profile from database using id
+     *
+     * @param id
+     * @return Profile
+     */
     @Override
     public Profile getProfileById(Long id) {
 
@@ -159,6 +182,11 @@ public class ProfileServiceImpl implements ProfileService {
         return profile.get();
     }
 
+    /**
+     * Get all profiles from database
+     *
+     * @return List<Profile>
+     */
     @Override
     public List<Profile> getAllProfiles() {
         return profileRepository.findAll();
@@ -177,6 +205,12 @@ public class ProfileServiceImpl implements ProfileService {
 
     }
 
+    /**
+     * Get profiles from database using cityId
+     *
+     * @param cityId, page
+     * @return List<Profile>
+     */
     @Override
     public List<Profile> getAllByCityId(Long cityId, int page) {
 
@@ -190,6 +224,12 @@ public class ProfileServiceImpl implements ProfileService {
         }
     }
 
+    /**
+     * Update profile
+     *
+     * @param id, profileDto
+     * @return Profile
+     */
     @Override
     public Profile updateProfile(Long id, ProfileDto profileDto) throws Exception {
 
@@ -207,6 +247,12 @@ public class ProfileServiceImpl implements ProfileService {
         return profile.get();
     }
 
+    /**
+     * Search profiles using cityId and typeId
+     *
+     * @param cityId, typeId
+     * @return List<Profile>
+     */
     @Override
     public List<Profile> profileSearch(long cityId, long typeId, int page) {
 
@@ -222,6 +268,12 @@ public class ProfileServiceImpl implements ProfileService {
         }
     }
 
+    /**
+     * Filter profiles
+     *
+     * @param cityId, typeId, genderIds, ageIds, sizeIds
+     * @return List<Profile>
+     */
     @Override
     public List<Profile> filterProfile(Long cityId, Long typeId, List<Long> genderIds, List<Long> ageIds, List<Long> sizeIds) {
 
@@ -239,16 +291,31 @@ public class ProfileServiceImpl implements ProfileService {
 
     }
 
+    /**
+     * Get last eight saved profiles from database ordered by upload date
+     *
+     * @return List<Profile>
+     */
     @Override
     public List<Profile> getLastEightProfiles() {
         return profileRepository.getLastEightProfiles();
     }
 
+    /**
+     * Save profile into database
+     *
+     * @param profile
+     */
     @Override
     public void saveProfile(Profile profile) {
         profileRepository.save(profile);
     }
 
+    /**
+     * Map from ProfileDto to Profile
+     *
+     * @param profileDto, profile
+     */
     private void mapFromDto(ProfileDto profileDto, Optional<Profile> profile) {
 
         profile.get().setProfileName(profileDto.getProfileName());
@@ -286,6 +353,11 @@ public class ProfileServiceImpl implements ProfileService {
         }
     }
 
+    /**
+     * Check if entities exist
+     *
+     * @param profileDto, profile
+     */
     private void saveEntitiesAndCheckIfExists(ProfileDto profileDto, Optional<Profile> profile) throws Exception {
         Optional<Age> age = ageRepository.findById(profileDto.getAgeId());
         if (age.isPresent()) {
@@ -336,6 +408,11 @@ public class ProfileServiceImpl implements ProfileService {
         }
     }
 
+    /**
+     * Check if entities are updated
+     *
+     * @param profileDto, profile
+     */
     private void checkIfEntityUpdateAndSave(ProfileDto profileDto, Optional<Profile> profile) throws Exception {
         if (profile.get().getNature().getId() != profileDto.getNatureId()) {
             Optional<Nature> nature = natureRepository.findById(profileDto.getNatureId());

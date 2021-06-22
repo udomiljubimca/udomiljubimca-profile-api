@@ -19,14 +19,23 @@ import javax.persistence.*;
 @ApiModel(description = "User info details")
 public class UserInfo {
 
+    /**
+     * unique user info, auto generated
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @ApiModelProperty(value = "${UserInfo.id}")
     private Long id;
 
+    /**
+     * user id
+     */
     @ApiModelProperty(value = "${UserInfo.userId}")
     private Long userId;
 
+    /**
+     * liked profile id
+     */
     @ManyToOne(cascade = CascadeType.ALL)
     @JsonIgnore
     @ApiModelProperty(value = "${UserInfo.profiles}")

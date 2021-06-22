@@ -21,7 +21,12 @@ public class UserInfoServiceImpl implements UserInfoService {
     @Autowired
     private ProfileRepository profileRepository;
 
-
+    /**
+     * Save User Info Dto(like) into database
+     *
+     * @param userInfoDto
+     * @return UserInfo
+     */
     @Override
     public UserInfo save(UserInfoDto userInfoDto) {
 
@@ -33,6 +38,12 @@ public class UserInfoServiceImpl implements UserInfoService {
 
     }
 
+    /**
+     * Map from UserInfoDto to UserInfo
+     *
+     * @param userInfoDto
+     * @return UserInfo
+     */
     private UserInfo mapFromUserInfoDto(UserInfoDto userInfoDto) {
 
         UserInfo userInfo = new UserInfo();

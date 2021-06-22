@@ -19,11 +19,17 @@ import javax.persistence.Id;
 @ApiModel(description = "Age details")
 public class Age {
 
+    /**
+     * unique age id, auto generated
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @ApiModelProperty(value = "${Age.id}")
     private long id;
 
+    /**
+     * age name
+     */
     @ApiModelProperty(value = "${Age.ageName}")
     private String ageName;
 

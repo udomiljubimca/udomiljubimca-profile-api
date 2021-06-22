@@ -14,6 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * Gender controller for Adopt a pet project
+ * Acceptance criterias:
+ * 1)get all genders
+ */
 @RestController
 @RequestMapping(value = "/gender")
 @Api(tags = {"Gender controller"})
@@ -22,6 +27,11 @@ public class GenderController {
     @Autowired
     private GenderService genderService;
 
+    /**
+     * 1) Get all genders route uses to get all genders
+     *
+     * @return List<Gender>
+     */
     @GetMapping("/all")
     @ApiOperation(
             notes = "${operation13.description}",
