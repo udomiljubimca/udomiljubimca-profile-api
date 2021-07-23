@@ -9,6 +9,8 @@ import com.java.profileservice.model.Profile;
 import com.java.profileservice.repository.ImageRepository;
 import com.java.profileservice.service.ImageService;
 import com.java.profileservice.service.ProfileService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class ImageServiceImpl implements ImageService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ImageServiceImpl.class);
 
     @Autowired
     private ImageRepository imageRepository;
@@ -56,6 +60,8 @@ public class ImageServiceImpl implements ImageService {
     @Override
     public void deleteImageById(Long imageId) throws Exception {
 
+        LOG.info("Starting deleting image by id {}", imageId);
+
         Optional<Image> image = imageRepository.findById(imageId);
 
         if (!image.isPresent()) {
@@ -64,12 +70,16 @@ public class ImageServiceImpl implements ImageService {
 
         //first delete from Cloudinary
         try {
+            LOG.info("Deleting form cloudinary.");
             deleteImageFromCloudinary(image.get().getImageLink());
+            LOG.info("Deleted form cloudinary.");
         } catch (Exception e) {
             throw new Exception("Can not delete this image!");
         }
         //second delete from database
         imageRepository.deleteById(imageId);
+        LOG.info("Deleted from database.");
+
     }
 
     /**

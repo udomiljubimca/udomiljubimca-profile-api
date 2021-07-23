@@ -2,6 +2,7 @@ package com.java.profileservice.service.impl;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import com.java.profileservice.contoller.ProfileController;
 import com.java.profileservice.dto.ProfileDto;
 import com.java.profileservice.exceptions.EntityNotExistsException;
 import com.java.profileservice.exceptions.ExistsEntityException;
@@ -9,6 +10,8 @@ import com.java.profileservice.model.*;
 import com.java.profileservice.repository.*;
 import com.java.profileservice.service.ImageService;
 import com.java.profileservice.service.ProfileService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
@@ -25,9 +28,12 @@ import java.util.stream.Collectors;
 @Service
 public class ProfileServiceImpl implements ProfileService {
 
-    public List<Long> AGE_IDS;
-    public List<Long> GENDER_IDS;
-    public List<Long> SIZE_IDS;
+    private static final Logger LOG = LoggerFactory.getLogger(ProfileServiceImpl.class);
+
+
+//    public List<Long> AGE_IDS;
+//    public List<Long> GENDER_IDS;
+//    public List<Long> SIZE_IDS;
 
     @Autowired
     private ProfileRepository profileRepository;
@@ -69,12 +75,27 @@ public class ProfileServiceImpl implements ProfileService {
      * Initialize ageIds, genderIds, sizeIds
      * Method should get all ids from database
      */
-    @PostConstruct
-    private void init() {
-        AGE_IDS = ageRepository.getAllIds();
-        GENDER_IDS = genderRepository.getAllIds();
-        SIZE_IDS = sizeRepository.getAllIds();
-    }
+//    @PostConstruct
+//    private void init() {
+//        // TODO: 23/07/2021 Ovo ne radi kada se prvi put pokrece aplikacija,
+//        //  tek kada se restartuje, sto znaci da treba da bude izmenjeno!
+//        AGE_IDS = ageRepository.getAllIds();
+//        GENDER_IDS = genderRepository.getAllIds();
+//        SIZE_IDS = sizeRepository.getAllIds();
+//
+//        // TODO: 23/07/2021 Testirati ovo. Ideja je da ako ne pokupi nista iz baze automatski doda ids.
+//        List<Long> ids =  Arrays.asList(1L,2L,3L);
+//        List<Long> gender =  Arrays.asList(1L,2L);
+//        if(AGE_IDS.size() == 0){
+//            AGE_IDS.addAll(ids);
+//        }
+//        if(SIZE_IDS.size() == 0){
+//            SIZE_IDS.addAll(ids);
+//        }
+//        if (GENDER_IDS.size() == 0){
+//            GENDER_IDS.addAll(gender);
+//        }
+//    }
 
     /**
      * Save profile into database
@@ -86,27 +107,36 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public Profile saveProfile(ProfileDto profileDto, MultipartFile[] multipartFiles) throws Exception {
 
+        LOG.info("Starting save profile method in service.");
+
         Optional<Profile> profile = Optional.of(new Profile());
 
         //Metoda proverava imprt da li postoje entiteti i setuje
+        LOG.info("Checking entities if exists and set to our new Profile.");
         saveEntitiesAndCheckIfExists(profileDto, profile);
 
         //Mapira ProfileDto u Profile, proverava special needs i habits
+        LOG.info("Starting mapping from DTO in Entity.");
         mapFromDto(profileDto, profile);
 
         //setujemo date
-        profile.get().setUploadDate(ZonedDateTime.now(ZoneId.of("GMT+2")));
+        ZonedDateTime now = ZonedDateTime.now(ZoneId.of("GMT+2"));
+        profile.get().setUploadDate(now);
+        LOG.info("Date set {}", now);
+
 
         //cuvamo slike
+        LOG.info("Starting saving images.");
         List<Image> images = imageService.saveAndReturnImages(multipartFiles, profile);
         profile.get().setImages(images);
+        LOG.info("Images are saved.");
 
         try {
             profileRepository.save(profile.get());
+            LOG.info("Profile is saved into database.");
         } catch (ExistsEntityException ex) {
             throw new ExistsEntityException("Profile with id: " + profile.get().getId() + " already exists");
         }
-
 
         return profile.get();
     }
@@ -282,13 +312,14 @@ public class ProfileServiceImpl implements ProfileService {
     public List<Profile> filterProfile(Long cityId, Long typeId, List<Long> genderIds, List<Long> ageIds, List<Long> sizeIds) {
 
         if (genderIds.isEmpty()) {
-            genderIds = GENDER_IDS;
+
+            genderIds = genderRepository.getAllIds();
         }
         if (ageIds.isEmpty()) {
-            ageIds = AGE_IDS;
+            ageIds = ageRepository.getAllIds();
         }
         if (sizeIds.isEmpty()) {
-            sizeIds = SIZE_IDS;
+            sizeIds = sizeRepository.getAllIds();
         }
 
         return profileRepository.filterProfile(cityId, typeId, genderIds, ageIds, sizeIds);
@@ -351,7 +382,11 @@ public class ProfileServiceImpl implements ProfileService {
         } else {
             profile.get().setSpecialHabitsText("Ljubimac nema posebne navike.");
         }
-        if (!healthIds.contains(2L)) {
+
+        // TODO: 23/07/2021 Probati da se refaktorise!
+        List<Long> allHealthIds = healthRepository.getAllIds();
+
+        if (!healthIds.contains(allHealthIds.get(1))) {
             profile.get().setSpecialNeeds("Ovaj ljubimac nema posebne potrebe.");
         } else {
             profile.get().setSpecialNeeds(profileDto.getSpecialNeeds());

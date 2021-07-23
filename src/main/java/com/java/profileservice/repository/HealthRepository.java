@@ -11,4 +11,7 @@ public interface HealthRepository extends JpaRepository<Health, Long> {
     @Query("select h from Health h where h.id IN (:ids)")
     List<Health> getHealthByIds(List<Long> ids);
 
+    @Query("select id from Health")
+    List<Long> getAllIds();
+
 }

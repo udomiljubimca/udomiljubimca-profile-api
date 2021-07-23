@@ -24,7 +24,7 @@ import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 /**
  * Profile controller for Adopt a pet project
- * Acceptance criterias:
+ * Acceptance criteria:
  * 1) save profile
  * 2) get profile by id
  * 3) get all profiles
@@ -34,7 +34,7 @@ import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
  * 7) filter profile
  * 8) delete profile by id
  * 9) update profile
- * 10) get last eigth saved profiles
+ * 10) get last eight saved profiles
  */
 @RestController
 @RequestMapping(value = "/profile")
@@ -77,11 +77,13 @@ public class ProfileController {
         }
 
         try {
+            LOG.info("Start with mapping dto into object ProfileDto.");
             profileDto = new ObjectMapper().readValue(json, ProfileDto.class);
+            LOG.info("End with mapping dto into object ProfileDto.");
         } catch (IOException e) {
             throw new IOException(e.getMessage());
         }
-
+        LOG.info("Saving and return profile.");
         return new ApiResponse(profileService.saveProfile(profileDto, multipartFiles));
     }
 
@@ -100,6 +102,7 @@ public class ProfileController {
     )
     public ApiResponse getProfileById(@PathVariable(name = "id") Long id) {
         Profile profile = profileService.getProfileById(id);
+        LOG.info("Getting profile from DB {}", "id: " + profile.getId() + ", profile name: " + profile.getProfileName());
         return new ApiResponse(profile);
     }
 
@@ -116,6 +119,7 @@ public class ProfileController {
     )
     public ApiResponse allProfiles() {
         List<Profile> allProfiles = profileService.getAllProfiles();
+        LOG.info("Getting all profiles.");
         return new ApiResponse(allProfiles);
     }
 
@@ -131,6 +135,7 @@ public class ProfileController {
             value = "${operation4.value}"
     )
     public ApiResponse getAllByTypeId(@PathVariable(name = "id") Long id) {
+        LOG.info("Getting all profiles by typeId.");
         List<Profile> list = profileService.getAllByTypeId(id);
         return new ApiResponse(list);
     }
@@ -148,6 +153,7 @@ public class ProfileController {
     )
     public ApiResponse getAllByCityId(@PathVariable(name = "id") Long id,
                                       @RequestParam(name = "page") int page) {
+        LOG.info("Getting all profiles by cityId.");
         List<Profile> list = profileService.getAllByCityId(id, page);
         return new ApiResponse(list);
     }
@@ -165,10 +171,11 @@ public class ProfileController {
     )
     public ApiResponse search(@RequestBody ProfileSearchDto profileSearchDto,
                               @RequestParam(name = "page") int page) throws Exception {
-
+        LOG.info("Started initial search by city and type ids.");
         if (profileSearchDto == null
                 || profileSearchDto.getCityId() == 0
                 || profileSearchDto.getTypeId() == 0) {
+            LOG.error("Some condition isn't pass.");
             throw new Exception("Bad request!");
         }
         List<Profile> list =
@@ -188,6 +195,8 @@ public class ProfileController {
             value = "${operation7.value}"
     )
     public ApiResponse filter(@RequestBody FilterDto filterDto) throws Exception {
+
+        LOG.info("Started filtering method.");
         if (filterDto == null) {
             throw new Exception("Bad request");
         }
@@ -195,7 +204,7 @@ public class ProfileController {
         List<Profile> list =
                 profileService.filterProfile(filterDto.getCityId(), filterDto.getTypeId(), filterDto.getGenderIds(),
                         filterDto.getAgeIds(), filterDto.getSizeIds());
-
+        LOG.info("Filtering passed successfully.");
         return new ApiResponse(list);
     }
 
@@ -210,7 +219,9 @@ public class ProfileController {
             value = "${operation8.value}"
     )
     public ApiResponse deleteById(@PathVariable(name = "id") Long id) throws Exception {
+        LOG.info("Deleting profile by id {}", id);
         profileService.deleteById(id);
+        LOG.info("Profile deleted.");
         return new ApiResponse("Profile is successfully deleted!");
     }
 
@@ -230,12 +241,15 @@ public class ProfileController {
     public ApiResponse updateProfile(@PathVariable(name = "id") Long id,
                                      @RequestBody ProfileDto profileDto)
             throws Exception {
+        LOG.info("Started update profile endpoint.");
         if (profileDto == null) {
             throw new Exception("Bad request!");
         }
         Profile profile = profileService.updateProfile(id, profileDto);
+        LOG.info("Profile updated successfully.");
         return new ApiResponse(profile);
     }
+
     /**
      * 10) Get last eight profiles route uses to get last eight saved profiles sorted by upload date
      *
@@ -248,6 +262,7 @@ public class ProfileController {
             value = "${operation10.value}"
     )
     public ApiResponse getLastEightProfiles() {
+        LOG.info("Getting eight profiles for home page.");
         List<Profile> list = profileService.getLastEightProfiles();
         return new ApiResponse(list);
 
