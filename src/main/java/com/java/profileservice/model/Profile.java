@@ -177,6 +177,7 @@ public class Profile {
     @ApiModelProperty(value = "${Profile.favourites}")
     private List<UserInfo> favorites;
 
-
+    @ApiModelProperty(value = "${ProfileDto.userName}")
+    private String userName;
 
 }

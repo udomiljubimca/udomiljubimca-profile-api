@@ -325,6 +325,7 @@ public class ProfileServiceImpl implements ProfileService {
      */
     private void mapFromDto(ProfileDto profileDto, Optional<Profile> profile) {
 
+        profile.get().setUserName(profileDto.getUserName());
         profile.get().setProfileName(profileDto.getProfileName());
         profile.get().setAssociationName(profileDto.getAssociationName());
         profile.get().setVaccinated(profileDto.isVaccinated());

@@ -123,4 +123,10 @@ public class ProfileDto {
     @ApiModelProperty(value = "${ProfileDto.healths}")
     private List<Long> healthIds;
 
+    /**
+     * username of user who uploaded profile
+     */
+    @ApiModelProperty(value = "${ProfileDto.userName}")
+    private String userName;
+
 }

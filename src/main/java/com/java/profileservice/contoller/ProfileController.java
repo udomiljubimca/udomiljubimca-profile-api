@@ -13,10 +13,14 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.security.RolesAllowed;
 import java.io.IOException;
+import java.rmi.AccessException;
+import java.security.Principal;
 import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -239,13 +243,19 @@ public class ProfileController {
             response = Profile.class
     )
     public ApiResponse updateProfile(@PathVariable(name = "id") Long id,
-                                     @RequestBody ProfileDto profileDto)
+                                     @RequestBody ProfileDto profileDto,
+                                     Principal principal)
             throws Exception {
         LOG.info("Started update profile endpoint.");
+        Profile profile = profileService.updateProfile(id, profileDto);
+
         if (profileDto == null) {
             throw new Exception("Bad request!");
         }
-        Profile profile = profileService.updateProfile(id, profileDto);
+        if(!principal.getName().equalsIgnoreCase(profile.getUserName())){
+            throw new AccessException("Access denied! You are not able to change this profile!");
+        }
+
         LOG.info("Profile updated successfully.");
         return new ApiResponse(profile);
     }

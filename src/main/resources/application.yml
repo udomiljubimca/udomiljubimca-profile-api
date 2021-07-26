@@ -6,28 +6,6 @@ keycloak-client:
   realm:  devnation
 
 spring:
-  security:
-    oauth2:
-      client:
-        registration:
-          keycloak:
-            provider: keycloak
-            client-id: cloud-gateway
-            client-secret: eafb58b7-e21f-4a91-9c0d-6105bbd6ab3e
-            authorization-grant-type: authorization_code
-            redirect-uri: http://localhost:8989/*
-            scope: openid
-        provider:
-          keycloak:
-            authorization-uri: ${keycloak-client.server-url}/realms/${keycloak-client.realm}/protocol/openid-connect/auth
-            token-uri: ${keycloak-client.server-url}/realms/${keycloak-client.realm}/protocol/openid-connect/token
-            user-info-uri: ${keycloak-client.server-url}/realms/${keycloak-client.realm}/protocol/openid-connect/userinfo
-            jwk-set-uri: ${keycloak-client.server-url}/realms/${keycloak-client.realm}/protocol/openid-connect/certs
-            user-name-attribute: name
-            user-info-authentication-method: header
-      resourceserver:
-        jwt:
-          jwk-set-uri: ${keycloak-client.server-url}/realms/${keycloak-client.realm}/protocol/openid-connect/certs
   datasource:
     url: jdbc:postgresql://localhost:5432/profiledatabase?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
     username: postgres
@@ -54,13 +32,15 @@ cloudinary:
   api_secret: Jd4I_wLdRvCGWPuSJBcK68474Ig
 
 keycloak:
-  auth-server-url: http://localhost:8080/auth
+  auth-server-url: http://localhost:8080/auth/
   realm: devnation
   resource: cloud-gateway
+  use-resource-role-mappings : true
   credentials:
     secret: eafb58b7-e21f-4a91-9c0d-6105bbd6ab3e
   public-client: true
   bearer-only: true
+  principal-attribute: preferred_username
 
 microservice:
   providers:
@@ -274,6 +254,7 @@ ProfileDto:
   sizeId: Size id
   typeId: Type id
   healths: List of health ids
+  userName: Username of user who uploaded profile
 
 #ProfileSearchDto
 ProfileSearchDto:
