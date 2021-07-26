@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
@@ -26,14 +27,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class ProfileServiceImpl implements ProfileService {
 
     private static final Logger LOG = LoggerFactory.getLogger(ProfileServiceImpl.class);
-
-
-//    public List<Long> AGE_IDS;
-//    public List<Long> GENDER_IDS;
-//    public List<Long> SIZE_IDS;
 
     @Autowired
     private ProfileRepository profileRepository;
@@ -70,32 +67,6 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Value("${cloudinary.api_secret}")
     private String cloudApiSecret;
-
-    /**
-     * Initialize ageIds, genderIds, sizeIds
-     * Method should get all ids from database
-     */
-//    @PostConstruct
-//    private void init() {
-//        // TODO: 23/07/2021 Ovo ne radi kada se prvi put pokrece aplikacija,
-//        //  tek kada se restartuje, sto znaci da treba da bude izmenjeno!
-//        AGE_IDS = ageRepository.getAllIds();
-//        GENDER_IDS = genderRepository.getAllIds();
-//        SIZE_IDS = sizeRepository.getAllIds();
-//
-//        // TODO: 23/07/2021 Testirati ovo. Ideja je da ako ne pokupi nista iz baze automatski doda ids.
-//        List<Long> ids =  Arrays.asList(1L,2L,3L);
-//        List<Long> gender =  Arrays.asList(1L,2L);
-//        if(AGE_IDS.size() == 0){
-//            AGE_IDS.addAll(ids);
-//        }
-//        if(SIZE_IDS.size() == 0){
-//            SIZE_IDS.addAll(ids);
-//        }
-//        if (GENDER_IDS.size() == 0){
-//            GENDER_IDS.addAll(gender);
-//        }
-//    }
 
     /**
      * Save profile into database
