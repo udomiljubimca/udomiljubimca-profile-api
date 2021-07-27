@@ -223,6 +223,7 @@ public class ProfileServiceImpl implements ProfileService {
         }
     }
 
+    // TODO: 27/07/2021 Probati da se salje ceo Profile objekat umesto ID-a kako bi izbegli dva puta proveravanje i uzimanje istog.
     /**
      * Update profile
      *

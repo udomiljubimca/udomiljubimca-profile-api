@@ -6,6 +6,7 @@ import com.java.profileservice.config.ApiResponse;
 import com.java.profileservice.dto.FilterDto;
 import com.java.profileservice.dto.ProfileDto;
 import com.java.profileservice.dto.ProfileSearchDto;
+import com.java.profileservice.exceptions.EntityNotExistsException;
 import com.java.profileservice.model.Profile;
 import com.java.profileservice.service.ProfileService;
 import io.swagger.annotations.Api;
@@ -22,6 +23,7 @@ import java.io.IOException;
 import java.rmi.AccessException;
 import java.security.Principal;
 import java.util.List;
+import java.util.Optional;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
@@ -246,16 +248,21 @@ public class ProfileController {
                                      @RequestBody ProfileDto profileDto,
                                      Principal principal)
             throws Exception {
+
         LOG.info("Started update profile endpoint.");
-        Profile profile = profileService.updateProfile(id, profileDto);
 
         if (profileDto == null) {
             throw new Exception("Bad request!");
         }
-        if(!principal.getName().equalsIgnoreCase(profile.getUserName())){
+
+        Profile profileForCheck = Optional.ofNullable(profileService.getProfileById(id))
+                .orElseThrow(() -> new EntityNotExistsException("Profile with id: " + id + " does not exist."));
+
+        if (!principal.getName().equalsIgnoreCase(profileForCheck.getUserName())) {
             throw new AccessException("Access denied! You are not able to change this profile!");
         }
 
+        Profile profile = profileService.updateProfile(id, profileDto);
         LOG.info("Profile updated successfully.");
         return new ApiResponse(profile);
     }
