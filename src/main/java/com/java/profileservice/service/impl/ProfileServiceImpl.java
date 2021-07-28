@@ -2,6 +2,7 @@ package com.java.profileservice.service.impl;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import com.cloudinary.utils.StringUtils;
 import com.java.profileservice.contoller.ProfileController;
 import com.java.profileservice.dto.ProfileDto;
 import com.java.profileservice.exceptions.EntityNotExistsException;
@@ -10,6 +11,7 @@ import com.java.profileservice.model.*;
 import com.java.profileservice.repository.*;
 import com.java.profileservice.service.ImageService;
 import com.java.profileservice.service.ProfileService;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,7 +73,7 @@ public class ProfileServiceImpl implements ProfileService {
     /**
      * Save profile into database
      *
-     * @param profileDto - Object form FE
+     * @param profileDto     - Object form FE
      * @param multipartFiles - Images
      * @return Profile
      */
@@ -137,29 +139,44 @@ public class ProfileServiceImpl implements ProfileService {
      * @param id - id of the Profile
      */
     @Override
-    public void deleteById(Long id) throws Exception {
+    public void deleteById(Long id, String userName) throws Exception {
+
+        LOG.info("Deleting profile with id {}", id);
+
 
         Optional<Profile> profile = profileRepository.findById(id);
         if (profile.isPresent()) {
-            Cloudinary cloudinary = new Cloudinary(
-                    "cloudinary://" + cloudApiKey + ":" + cloudApiSecret + "@" + cloudName);
-            List<String> urls = profile.get().getImages()
-                    .stream().map(Image::getImageLink)
-                    .collect(Collectors.toList());
-
-            for (String url : urls) {
-                cloudinary.api().deleteResources(new ArrayList<>(
-                                Arrays.asList(url.substring(66, 86))),
-                        ObjectUtils.emptyMap());
+            if(!profile.get().getUserName().equalsIgnoreCase(userName)){
+                LOG.error("This profile is not posted by this user: {}", userName);
+                throw new Exception("Authentication error, you can't delete this profile!");
             }
-        }
+            try {
+                Cloudinary cloudinary = new Cloudinary(
+                        "cloudinary://" + cloudApiKey + ":" + cloudApiSecret + "@" + cloudName);
+                List<String> urls = profile.get().getImages()
+                        .stream().map(Image::getImageLink)
+                        .collect(Collectors.toList());
 
-        try {
-            profileRepository.deleteById(id);
-        } catch (Exception e) {
+                LOG.info("Start with deleting images first.");
+                for (String url : urls) {
+                    cloudinary.api().deleteResources(new ArrayList<>(
+                                    Arrays.asList(url.substring(66, 86))),
+                            ObjectUtils.emptyMap());
+                }
+                LOG.info("Images deleted successfully.");
+
+                profileRepository.deleteById(id);
+
+                LOG.info("Profile deleted successfully.");
+            } catch (Exception e) {
+                LOG.error("Error is happened with Cloudinary connection!");
+                throw new Exception("Error with image cloud " + e.getMessage());
+            }
+
+        } else {
+            LOG.error("Profile with id {} does not exists.", id);
             throw new EntityNotExistsException("Profile with id:" + id + " not found");
         }
-
     }
 
     /**
@@ -171,9 +188,12 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public Profile getProfileById(Long id) {
 
+        LOG.info("Get profile by id {} method ", id);
+
         Optional<Profile> profile = profileRepository.findById(id);
 
         if (!profile.isPresent()) {
+            LOG.error("Profile with id {} does not exists.", id);
             throw new EntityNotExistsException("Profile with id: " + id + " not found");
         }
 
@@ -193,12 +213,15 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public List<Profile> getAllByTypeId(Long typeId) {
 
+        LOG.info("Get profile by Type id {} method.", typeId);
+
         Optional<Type> type = typeRepository.findById(typeId);
 
         if (type.isPresent()) {
             return profileRepository.findAllByTypeId(typeId);
         } else {
-            return new ArrayList<>();
+            LOG.error("Type with id {} does not exists.", typeId);
+            throw new EntityNotExistsException("Type with id: " + typeId + " not found");
         }
 
     }
@@ -207,11 +230,13 @@ public class ProfileServiceImpl implements ProfileService {
      * Get profiles from database using cityId
      *
      * @param cityId - city id
-     * @param page - number of page
+     * @param page   - number of page
      * @return List<Profile>
      */
     @Override
     public List<Profile> getAllByCityId(Long cityId, int page) {
+
+        LOG.info("Get profile by City id {} method.", cityId);
 
         Optional<City> city = cityRepository.findById(cityId);
         Pageable pageable = PageRequest.of(page, 2);
@@ -219,32 +244,39 @@ public class ProfileServiceImpl implements ProfileService {
         if (city.isPresent()) {
             return profileRepository.findAllByCityId(cityId, pageable);
         } else {
-            return new ArrayList<>();
+            LOG.error("City with id {} does not exists.", cityId);
+            throw new EntityNotExistsException("City with id: " + cityId + " not found");
         }
     }
 
     // TODO: 27/07/2021 Probati da se salje ceo Profile objekat umesto ID-a kako bi izbegli dva puta proveravanje i uzimanje istog.
+
     /**
      * Update profile
      *
-     * @param id - profile id
+     * @param id         - profile id
      * @param profileDto - profile form FE
      * @return Profile
      */
     @Override
     public Profile updateProfile(Long id, ProfileDto profileDto) throws Exception {
 
+        LOG.info("Start with updating profile.");
+
         Optional<Profile> profile = profileRepository.findById(id);
         if (!profile.isPresent()) {
+            LOG.error("Profile with id {} does not exists.", id);
             throw new EntityNotExistsException("Profile with id : " + id + " does not exist");
         }
 
+        LOG.info("Checking for entity ids and change if necessary.");
         checkIfEntityUpdateAndSave(profileDto, profile);
 
+        LOG.info("Map from Dto to Entity.");
         mapFromDto(profileDto, profile);
 
         profileRepository.save(profile.get());
-
+        LOG.info("Profile successfully updated.");
         return profile.get();
     }
 
@@ -258,6 +290,8 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public List<Profile> profileSearch(long cityId, long typeId, int page) {
 
+        LOG.info("Search by City id {} and Type id {}", cityId, typeId);
+
         Optional<City> city = cityRepository.findById(cityId);
         Optional<Type> type = typeRepository.findById(typeId);
 
@@ -266,31 +300,37 @@ public class ProfileServiceImpl implements ProfileService {
         if (city.isPresent() && type.isPresent()) {
             return profileRepository.searchProfile(cityId, typeId, pageable);
         } else {
-            return new ArrayList<>();
+            LOG.error("Type or City does not exists.");
+            throw new EntityNotExistsException("City or Type with ids city: " + cityId + " and type: " + typeId + " does not exists.");
         }
     }
 
     /**
      * Filter profiles
      *
-     * @param cityId - city id
-     * @param typeId - type id
+     * @param cityId    - city id
+     * @param typeId    - type id
      * @param genderIds - list of gender ids
-     * @param ageIds - list of age ids
-     * @param sizeIds - list of size ids
+     * @param ageIds    - list of age ids
+     * @param sizeIds   - list of size ids
      * @return List<Profile>
      */
     @Override
-    public List<Profile> filterProfile(Long cityId, Long typeId, List<Long> genderIds, List<Long> ageIds, List<Long> sizeIds) {
+    public List<Profile> filterProfile(Long cityId, Long
+            typeId, List<Long> genderIds, List<Long> ageIds, List<Long> sizeIds) {
+
+        LOG.info("Filtering by City id {} and Type id {}", cityId, typeId);
 
         if (genderIds.isEmpty()) {
-
+            LOG.info("Gender ids are empty, getting from database.");
             genderIds = genderRepository.getAllIds();
         }
         if (ageIds.isEmpty()) {
+            LOG.info("Age ids are empty, getting from database.");
             ageIds = ageRepository.getAllIds();
         }
         if (sizeIds.isEmpty()) {
+            LOG.info("Size ids are empty, getting from database.");
             sizeIds = sizeRepository.getAllIds();
         }
 
@@ -305,6 +345,7 @@ public class ProfileServiceImpl implements ProfileService {
      */
     @Override
     public List<Profile> getLastEightProfiles() {
+        LOG.info("Get last eight profiles for home page.");
         return profileRepository.getLastEightProfiles();
     }
 
@@ -315,6 +356,7 @@ public class ProfileServiceImpl implements ProfileService {
      */
     @Override
     public void saveProfile(Profile profile) {
+        LOG.info("Saving profile.");
         profileRepository.save(profile);
     }
 
@@ -322,7 +364,7 @@ public class ProfileServiceImpl implements ProfileService {
      * Map from ProfileDto to Profile
      *
      * @param profileDto - profileDto
-     * @param profile - profile
+     * @param profile    - profile
      */
     private void mapFromDto(ProfileDto profileDto, Optional<Profile> profile) {
 
@@ -370,7 +412,7 @@ public class ProfileServiceImpl implements ProfileService {
      * Check if entities exist
      *
      * @param profileDto - profileDto
-     * @param profile - profile
+     * @param profile    - profile
      */
     private void saveEntitiesAndCheckIfExists(ProfileDto profileDto, Optional<Profile> profile) throws Exception {
         Optional<Age> age = ageRepository.findById(profileDto.getAgeId());
@@ -426,7 +468,7 @@ public class ProfileServiceImpl implements ProfileService {
      * Check if entities are updated
      *
      * @param profileDto - profileDto
-     * @param profile - profile
+     * @param profile    - profile
      */
     private void checkIfEntityUpdateAndSave(ProfileDto profileDto, Optional<Profile> profile) throws Exception {
         if (profile.get().getNature().getId() != profileDto.getNatureId()) {
@@ -434,15 +476,15 @@ public class ProfileServiceImpl implements ProfileService {
             if (nature.isPresent()) {
                 profile.get().setNature(nature.get());
             } else {
-                throw new EntityNotExistsException("Nature with id: " + nature.get().getId() + " not found");
+                throw new EntityNotExistsException("Nature with id: " + profileDto.getNatureId() + " not found");
             }
         }
-        if (profile.get().getAge().getId() != profileDto.getNatureId()) {
+        if (profile.get().getAge().getId() != profileDto.getAgeId()) {
             Optional<Age> age = ageRepository.findById(profileDto.getAgeId());
             if (age.isPresent()) {
                 profile.get().setAge(age.get());
             } else {
-                throw new EntityNotExistsException("Age with id: " + age.get().getId() + " not found");
+                throw new EntityNotExistsException("Age with id: " + profileDto.getAgeId() + " not found");
             }
         }
         if (profile.get().getGender().getId() != profileDto.getGenderId()) {
@@ -450,7 +492,7 @@ public class ProfileServiceImpl implements ProfileService {
             if (gender.isPresent()) {
                 profile.get().setGender(gender.get());
             } else {
-                throw new EntityNotExistsException("Gender with id: " + gender.get().getId() + " not found");
+                throw new EntityNotExistsException("Gender with id: " + profileDto.getGenderId() + " not found");
             }
         }
         if (profile.get().getSize().getId() != profileDto.getSizeId()) {
@@ -458,7 +500,7 @@ public class ProfileServiceImpl implements ProfileService {
             if (size.isPresent()) {
                 profile.get().setSize(size.get());
             } else {
-                throw new EntityNotExistsException("Size with id: " + size.get().getId() + " not found");
+                throw new EntityNotExistsException("Size with id: " + profileDto.getSizeId() + " not found");
             }
         }
         if (profile.get().getCity().getId() != profileDto.getCityId()) {
@@ -466,7 +508,7 @@ public class ProfileServiceImpl implements ProfileService {
             if (city.isPresent()) {
                 profile.get().setCity(city.get());
             } else {
-                throw new EntityNotExistsException("City with id: " + city.get().getId() + " not found");
+                throw new EntityNotExistsException("City with id: " + profileDto.getCityId() + " not found");
             }
         }
         if (profile.get().getType().getId() != profileDto.getTypeId()) {
@@ -474,7 +516,7 @@ public class ProfileServiceImpl implements ProfileService {
             if (type.isPresent()) {
                 profile.get().setType(type.get());
             } else {
-                throw new EntityNotExistsException("Type with id: " + type.get().getId() + " not found");
+                throw new EntityNotExistsException("Type with id: " + profileDto.getTypeId() + " not found");
             }
         }
 

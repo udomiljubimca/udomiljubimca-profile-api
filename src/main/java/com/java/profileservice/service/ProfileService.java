@@ -13,7 +13,7 @@ public interface ProfileService {
 
     void deleteAll() throws Exception;
 
-    void deleteById(Long id) throws Exception;
+    void deleteById(Long id, String userName) throws Exception;
 
     Profile getProfileById(Long id);
 

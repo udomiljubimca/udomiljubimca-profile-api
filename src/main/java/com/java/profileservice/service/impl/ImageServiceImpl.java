@@ -55,7 +55,7 @@ public class ImageServiceImpl implements ImageService {
     /**
      * Delete image by id
      *
-     * @param imageId
+     * @param imageId - id form database
      */
     @Override
     public void deleteImageById(Long imageId) throws Exception {
@@ -85,7 +85,7 @@ public class ImageServiceImpl implements ImageService {
     /**
      * Delete images by list of ids
      *
-     * @param ids
+     * @param ids - ids
      */
     @Override
     public void deleteImagesByIds(List<Long> ids) {
@@ -93,9 +93,11 @@ public class ImageServiceImpl implements ImageService {
     }
 
     /**
-     * Upload image
+     * Upload images, Method should upload images on Cloudinary for particular Profile.
      *
-     * @param multipartFiles, profileId
+     *
+     * @param multipartFiles - images
+     * @param profileId - profileId
      */
     @Override
     public void uploadImages(MultipartFile[] multipartFiles, Long profileId) {
@@ -129,9 +131,10 @@ public class ImageServiceImpl implements ImageService {
     }
 
     /**
-     * Save and return images
+     * Save and return images for initial save. So we grab images from request and save here.
      *
-     * @param multipartFiles, profile
+     * @param multipartFiles - images
+     * @param profile - profile
      * @return List<Image>
      */
     @Override
@@ -153,9 +156,9 @@ public class ImageServiceImpl implements ImageService {
     }
 
     /**
-     * Upload image on cloudinary
+     * Upload image on cloudinary and return particular url for Image
      *
-     * @param multipartFile
+     * @param multipartFile - image
      * @return String (image url)
      */
     private String uploadOnCloudinary(MultipartFile multipartFile) throws IOException {
@@ -175,7 +178,7 @@ public class ImageServiceImpl implements ImageService {
     }
 
     /**
-     * Delete image from clodinary
+     * Delete image from Cloudinary
      *
      * @param imageLink
      */

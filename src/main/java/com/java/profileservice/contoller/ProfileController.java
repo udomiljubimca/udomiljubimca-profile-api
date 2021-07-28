@@ -11,6 +11,8 @@ import com.java.profileservice.model.Profile;
 import com.java.profileservice.service.ProfileService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.units.qual.A;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,7 @@ import java.io.IOException;
 import java.rmi.AccessException;
 import java.security.Principal;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -69,22 +72,24 @@ public class ProfileController {
     )
     public ApiResponse saveProfile(
             @RequestParam(value = "files", required = false) MultipartFile[] multipartFiles,
-            @RequestParam(value = "json") String json)
+            @RequestParam(value = "json") String json,
+            Principal principal)
             throws Exception {
 
         ProfileDto profileDto;
 
-        if (multipartFiles == null) {
+        if (Objects.isNull(multipartFiles)) {
             LOG.error("Image is not present!");
             throw new Exception("Images are not preset");
         }
-        if (json == null) {
+        if (Objects.isNull(json)) {
             throw new Exception("Json are not preset");
         }
 
         try {
             LOG.info("Start with mapping dto into object ProfileDto.");
             profileDto = new ObjectMapper().readValue(json, ProfileDto.class);
+            profileDto.setUserName(principal.getName());
             LOG.info("End with mapping dto into object ProfileDto.");
         } catch (IOException e) {
             throw new IOException(e.getMessage());
@@ -181,7 +186,7 @@ public class ProfileController {
         if (profileSearchDto == null
                 || profileSearchDto.getCityId() == 0
                 || profileSearchDto.getTypeId() == 0) {
-            LOG.error("Some condition isn't pass.");
+            LOG.error("Some condition didn't passed.");
             throw new Exception("Bad request!");
         }
         List<Profile> list =
@@ -203,7 +208,7 @@ public class ProfileController {
     public ApiResponse filter(@RequestBody FilterDto filterDto) throws Exception {
 
         LOG.info("Started filtering method.");
-        if (filterDto == null) {
+        if (Objects.isNull(filterDto)) {
             throw new Exception("Bad request");
         }
 
@@ -211,6 +216,9 @@ public class ProfileController {
                 profileService.filterProfile(filterDto.getCityId(), filterDto.getTypeId(), filterDto.getGenderIds(),
                         filterDto.getAgeIds(), filterDto.getSizeIds());
         LOG.info("Filtering passed successfully.");
+        if (list.size() == 0) {
+            return new ApiResponse("No results based on entered filters.");
+        }
         return new ApiResponse(list);
     }
 
@@ -224,9 +232,13 @@ public class ProfileController {
             notes = "${operation8.description}",
             value = "${operation8.value}"
     )
-    public ApiResponse deleteById(@PathVariable(name = "id") Long id) throws Exception {
+    public ApiResponse deleteById(@PathVariable(name = "id") Long id, Principal principal) throws Exception {
         LOG.info("Deleting profile by id {}", id);
-        profileService.deleteById(id);
+        if (Objects.isNull(principal)) {
+            throw new Exception("Authorization error, you have to be sign in first!");
+        }
+        String userName = principal.getName();
+        profileService.deleteById(id, userName);
         LOG.info("Profile deleted.");
         return new ApiResponse("Profile is successfully deleted!");
     }
@@ -251,7 +263,7 @@ public class ProfileController {
 
         LOG.info("Started update profile endpoint.");
 
-        if (profileDto == null) {
+        if (Objects.isNull(profileDto)) {
             throw new Exception("Bad request!");
         }
 
@@ -261,7 +273,7 @@ public class ProfileController {
         if (!principal.getName().equalsIgnoreCase(profileForCheck.getUserName())) {
             throw new AccessException("Access denied! You are not able to change this profile!");
         }
-
+        profileDto.setUserName(principal.getName());
         Profile profile = profileService.updateProfile(id, profileDto);
         LOG.info("Profile updated successfully.");
         return new ApiResponse(profile);
