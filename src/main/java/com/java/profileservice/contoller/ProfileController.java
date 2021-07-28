@@ -11,16 +11,12 @@ import com.java.profileservice.model.Profile;
 import com.java.profileservice.service.ProfileService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.units.qual.A;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.security.RolesAllowed;
 import java.io.IOException;
 import java.rmi.AccessException;
 import java.security.Principal;
@@ -71,16 +67,19 @@ public class ProfileController {
             response = Profile.class
     )
     public ApiResponse saveProfile(
-            @RequestParam(value = "files", required = false) MultipartFile[] multipartFiles,
+            @RequestParam(value = "files") MultipartFile[] multipartFiles,
             @RequestParam(value = "json") String json,
             Principal principal)
             throws Exception {
 
         ProfileDto profileDto;
 
-        if (Objects.isNull(multipartFiles)) {
+        if (Objects.isNull(principal)) {
+            throw new Exception("Authorization error, you have to be sign in first!");
+        }
+        if (Objects.isNull(multipartFiles) || multipartFiles.length < 1) {
             LOG.error("Image is not present!");
-            throw new Exception("Images are not preset");
+            throw new Exception("Images are not preset, one image is required!");
         }
         if (Objects.isNull(json)) {
             throw new Exception("Json are not preset");

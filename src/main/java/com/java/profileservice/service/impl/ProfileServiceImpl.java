@@ -2,8 +2,6 @@ package com.java.profileservice.service.impl;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
-import com.cloudinary.utils.StringUtils;
-import com.java.profileservice.contoller.ProfileController;
 import com.java.profileservice.dto.ProfileDto;
 import com.java.profileservice.exceptions.EntityNotExistsException;
 import com.java.profileservice.exceptions.ExistsEntityException;
@@ -11,7 +9,6 @@ import com.java.profileservice.model.*;
 import com.java.profileservice.repository.*;
 import com.java.profileservice.service.ImageService;
 import com.java.profileservice.service.ProfileService;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.PostConstruct;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
@@ -146,7 +142,7 @@ public class ProfileServiceImpl implements ProfileService {
 
         Optional<Profile> profile = profileRepository.findById(id);
         if (profile.isPresent()) {
-            if(!profile.get().getUserName().equalsIgnoreCase(userName)){
+            if (!profile.get().getUserName().equalsIgnoreCase(userName)) {
                 LOG.error("This profile is not posted by this user: {}", userName);
                 throw new Exception("Authentication error, you can't delete this profile!");
             }

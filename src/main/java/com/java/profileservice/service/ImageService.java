@@ -21,4 +21,6 @@ public interface ImageService {
 
     List<Image> saveAndReturnImages(MultipartFile[] multipartFiles, Optional<Profile> profile);
 
+    Image getImageById(Long id);
+
 }
