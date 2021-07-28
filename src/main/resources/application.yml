@@ -2,8 +2,8 @@ server:
   port: 5555
 
 keycloak-client:
-  server-url: http://localhost:8080/auth
-  realm:  devnation
+  server-url: ${KEYCLOAK_URL_WITH_PATH:http://localhost:8080/auth}
+  realm: ${CLIENT_RELM_NAME:devnation}
 
 spring:
   datasource:
@@ -26,18 +26,21 @@ spring:
       enabled: true
       max-file-size: 10MB
       max-request-size: 10MB
-cloudinary:
-  cloud_name: udomiljubimca
-  api_key: 372925527928556
-  api_secret: Jd4I_wLdRvCGWPuSJBcK68474Ig
 
+#==================Cloudinary properties================
+cloudinary:
+  cloud_name: ${CLOUDINARY_NAME:udomiljubimca}
+  api_key: ${CLOUDINARY_API-KEY:372925527928556}
+  api_secret: ${CLOUDINARY_API_SECRET:Jd4I_wLdRvCGWPuSJBcK68474Ig}
+
+#==================Keycloak properties================
 keycloak:
-  auth-server-url: http://localhost:8080/auth/
-  realm: devnation
-  resource: cloud-gateway
-  use-resource-role-mappings : true
+  auth-server-url: ${KEYCLOAK_URL_WITH_PATH:http://localhost:8080/auth}
+  realm: ${CLIENT_RELM_NAME:devnation}
+  resource: ${KEYCLOAK_CLIENT_NAME:cloud-gateway}
+  use-resource-role-mappings: true
   credentials:
-    secret: eafb58b7-e21f-4a91-9c0d-6105bbd6ab3e
+    secret: ${CLIENT_RELM_SECRET:eafb58b7-e21f-4a91-9c0d-6105bbd6ab3e}
   public-client: true
   bearer-only: true
   principal-attribute: preferred_username
