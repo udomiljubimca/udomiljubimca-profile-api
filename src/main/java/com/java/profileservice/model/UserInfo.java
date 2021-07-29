@@ -8,36 +8,36 @@ import lombok.*;
 
 import javax.persistence.*;
 
+
 @Entity
 @Data
-@NoArgsConstructor
+@NoArgsConstructor()
 @AllArgsConstructor
 @Builder
 @ToString
 @EqualsAndHashCode
-@ApiModel(description = "Image details")
-public class Image {
+@ApiModel(description = "User info details")
+public class UserInfo {
 
     /**
-     * unique image id, auto generated
+     * unique user info, auto generated
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @ApiModelProperty(value = "${Image.id}")
-    private long id;
+    @ApiModelProperty(value = "${UserInfo.id}")
+    private Long id;
 
     /**
-     * image link
+     * user id
      */
-    @ApiModelProperty(value = "${Image.link}")
-    private String imageLink;
+    @ApiModelProperty(value = "${UserInfo.userId}")
+    private Long userId;
 
     /**
-     * profile id
+     * liked profile id
      */
-    @ManyToOne(cascade = {CascadeType.DETACH,CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH})
+    @ManyToOne(cascade = CascadeType.ALL)
     @JsonIgnore
-    @ApiModelProperty(value = "${Image.profile}")
+    @ApiModelProperty(value = "${UserInfo.profiles}")
     private Profile profile;
-
 }

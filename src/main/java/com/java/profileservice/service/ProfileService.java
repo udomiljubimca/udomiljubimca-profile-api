@@ -2,6 +2,8 @@ package com.java.profileservice.service;
 
 import com.java.profileservice.dto.ProfileDto;
 import com.java.profileservice.model.Profile;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -13,9 +15,7 @@ public interface ProfileService {
 
     void deleteAll() throws Exception;
 
-    void deleteById(Long id) throws Exception;
-
-    String uploadImages(MultipartFile multipartFile) throws IOException;
+    void deleteById(Long id, String userName) throws Exception;
 
     Profile getProfileById(Long id);
 
@@ -23,7 +23,17 @@ public interface ProfileService {
 
     List<Profile> getAllByTypeId(Long typeId);
 
-    List<Profile> getAllByCityId(Long cityId, int page);
+    Page<Profile> getAllByCityId(Long cityId, Pageable pageable);
 
-    Profile updateProfile(Long id, MultipartFile[] multipartFiles, String json) throws Exception;
+    Profile updateProfile(Long id, ProfileDto profileDto) throws Exception;
+
+    void saveProfile(Profile profile);
+
+    List<Profile> getLastEightProfiles();
+
+    Page<Profile> profileInitialSearch(long cityId, long typeId, Pageable pageable);
+
+    Page<Profile> filterProfiles(Long cityId,Long typeId, List<Long> genderIds, List<Long> ageIds, List<Long> sizeIds, Pageable pageable);
+
+
 }

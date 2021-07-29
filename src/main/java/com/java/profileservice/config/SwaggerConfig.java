@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.ParameterBuilder;
-import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.schema.ModelRef;
 import springfox.documentation.service.ApiInfo;
@@ -30,11 +29,11 @@ public class SwaggerConfig {
 
         //Adding header
         ParameterBuilder aParameterBuilder = new ParameterBuilder();
-        aParameterBuilder.name("Authorization")
+        aParameterBuilder.name("")
                 .modelRef(new ModelRef("string"))
-                .parameterType("header")
-                .defaultValue("Bearer ")
-                .description("Please add 'Bearer ' before token, example: \n 'Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAi...'")
+                .parameterType("")
+                .defaultValue("")
+                .description("")
                 .required(false)
                 .build();
         List<Parameter> aParameters = new ArrayList<>();
@@ -52,13 +51,15 @@ public class SwaggerConfig {
     //Here is an example where we select any api that matches one of these paths
     private Predicate<String> paths() {
         return or(
-                regex("/"));
+                regex("/.*"),
+                regex("/profile.*"));
+
     }
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("Authorisation server Api")
-                .description("Sample Api for user authorization")
+                .title("Profile Api")
+                .description("Api for working with profiles")
                 .version("1.0")
                 .termsOfServiceUrl("http://terms-of-services.url")
                 .license("LICENSE")

@@ -1,5 +1,7 @@
 package com.java.profileservice.model;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
 import javax.persistence.Entity;
@@ -14,12 +16,21 @@ import javax.persistence.Id;
 @Builder
 @ToString
 @EqualsAndHashCode
+@ApiModel(description = "Gender details")
 public class Gender {
 
+    /**
+     * unique gender id, auto generated
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @ApiModelProperty(value = "${Gender.id}")
     private long id;
 
+    /**
+     * gender name
+     */
+    @ApiModelProperty(value = "${Gender.genderName}")
     private String genderName;
 
     public Gender(String genderName) {
