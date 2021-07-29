@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -226,19 +227,17 @@ public class ProfileServiceImpl implements ProfileService {
      * Get profiles from database using cityId
      *
      * @param cityId - city id
-     * @param page   - number of page
+     * @param pageable   - number and size of page
      * @return List<Profile>
      */
     @Override
-    public List<Profile> getAllByCityId(Long cityId, int page) {
+    public Page<Profile> getAllByCityId(Long cityId, Pageable pageable) {
 
         LOG.info("Get profile by City id {} method.", cityId);
-
         Optional<City> city = cityRepository.findById(cityId);
-        Pageable pageable = PageRequest.of(page, 2);
 
         if (city.isPresent()) {
-            return profileRepository.findAllByCityId(cityId, pageable);
+            return profileRepository.findByCityId(cityId, pageable);
         } else {
             LOG.error("City with id {} does not exists.", cityId);
             throw new EntityNotExistsException("City with id: " + cityId + " not found");
@@ -277,31 +276,6 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     /**
-     * Search profiles using cityId and typeId
-     *
-     * @param cityId - city id
-     * @param typeId - type id
-     * @return List<Profile>
-     */
-    @Override
-    public List<Profile> profileSearch(long cityId, long typeId, int page) {
-
-        LOG.info("Search by City id {} and Type id {}", cityId, typeId);
-
-        Optional<City> city = cityRepository.findById(cityId);
-        Optional<Type> type = typeRepository.findById(typeId);
-
-        Pageable pageable = PageRequest.of(page, 16);
-
-        if (city.isPresent() && type.isPresent()) {
-            return profileRepository.searchProfile(cityId, typeId, pageable);
-        } else {
-            LOG.error("Type or City does not exists.");
-            throw new EntityNotExistsException("City or Type with ids city: " + cityId + " and type: " + typeId + " does not exists.");
-        }
-    }
-
-    /**
      * Filter profiles
      *
      * @param cityId    - city id
@@ -312,8 +286,7 @@ public class ProfileServiceImpl implements ProfileService {
      * @return List<Profile>
      */
     @Override
-    public List<Profile> filterProfile(Long cityId, Long
-            typeId, List<Long> genderIds, List<Long> ageIds, List<Long> sizeIds) {
+    public Page<Profile> filterProfiles(Long cityId, Long typeId, List<Long> genderIds, List<Long> ageIds, List<Long> sizeIds, Pageable pageable) {
 
         LOG.info("Filtering by City id {} and Type id {}", cityId, typeId);
 
@@ -329,11 +302,8 @@ public class ProfileServiceImpl implements ProfileService {
             LOG.info("Size ids are empty, getting from database.");
             sizeIds = sizeRepository.getAllIds();
         }
-
-        return profileRepository.filterProfile(cityId, typeId, genderIds, ageIds, sizeIds);
-
+        return profileRepository.filterProfiles(cityId, typeId, genderIds, ageIds, sizeIds, pageable);
     }
-
     /**
      * Get last eight saved profiles from database ordered by upload date
      *
@@ -343,6 +313,31 @@ public class ProfileServiceImpl implements ProfileService {
     public List<Profile> getLastEightProfiles() {
         LOG.info("Get last eight profiles for home page.");
         return profileRepository.getLastEightProfiles();
+    }
+
+    /**
+     * Search profiles using cityId and typeId
+     *
+     * @param cityId - city id
+     * @param typeId - type id
+     * @param pageable - number and size of pages
+     * @return List<Profile>
+     */
+    @Override
+    public Page<Profile> profileInitialSearch(long cityId, long typeId, Pageable pageable) {
+
+        LOG.info("Search by City id {} and Type id {}", cityId, typeId);
+
+        Optional<City> city = cityRepository.findById(cityId);
+        Optional<Type> type = typeRepository.findById(typeId);
+
+        if (city.isPresent() && type.isPresent()) {
+            return profileRepository.initialSearch(cityId, typeId, pageable);
+        } else {
+            LOG.error("Type or City does not exists.");
+            throw new EntityNotExistsException("City or Type with ids city: " + cityId + " and type: " + typeId + " does not exists.");
+        }
+
     }
 
     /**

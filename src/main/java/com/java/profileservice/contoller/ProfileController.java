@@ -14,15 +14,16 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.rmi.AccessException;
 import java.security.Principal;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
@@ -162,10 +163,28 @@ public class ProfileController {
             value = "${operation5.value}"
     )
     public ApiResponse getAllByCityId(@PathVariable(name = "id") Long id,
-                                      @RequestParam(name = "page") int page) {
+                                      @RequestParam(name = "page") int page,
+                                      @RequestParam(name = "size") int size) throws Exception {
         LOG.info("Getting all profiles by cityId.");
-        List<Profile> list = profileService.getAllByCityId(id, page);
-        return new ApiResponse(list);
+
+        Page<Profile> profiles;
+        List<Profile> list;
+        try {
+            Pageable pageable = PageRequest.of(page, size);
+            profiles = profileService.getAllByCityId(id, pageable);
+            list = profiles.getContent();
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("profiles", list);
+            response.put("currentPage", profiles.getNumber());
+            response.put("totalItems", profiles.getTotalElements());
+            response.put("totalPages", profiles.getTotalPages());
+
+            return new ApiResponse(response);
+
+        } catch (Exception e) {
+            throw new Exception("Something went wrong!");
+        }
     }
 
     /**
@@ -180,7 +199,8 @@ public class ProfileController {
             value = "${operation6.value}"
     )
     public ApiResponse search(@RequestBody ProfileSearchDto profileSearchDto,
-                              @RequestParam(name = "page") int page) throws Exception {
+                              @RequestParam(name = "page") int page,
+                              @RequestParam(name = "size") int size) throws Exception {
         LOG.info("Started initial search by city and type ids.");
         if (profileSearchDto == null
                 || profileSearchDto.getCityId() == 0
@@ -188,9 +208,25 @@ public class ProfileController {
             LOG.error("Some condition didn't passed.");
             throw new Exception("Bad request!");
         }
-        List<Profile> list =
-                profileService.profileSearch(profileSearchDto.getCityId(), profileSearchDto.getTypeId(), page);
-        return new ApiResponse(list);
+
+        Page<Profile> profiles;
+        List<Profile> list;
+        try {
+            Pageable pageable = PageRequest.of(page, size);
+            profiles = profileService.profileInitialSearch(profileSearchDto.getCityId(), profileSearchDto.getTypeId(), pageable);
+            list = profiles.getContent();
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("profiles", list);
+            response.put("currentPage", profiles.getNumber());
+            response.put("totalItems", profiles.getTotalElements());
+            response.put("totalPages", profiles.getTotalPages());
+
+            return new ApiResponse(response);
+
+        } catch (Exception e) {
+            throw new Exception("Something went wrong!");
+        }
     }
 
     /**
@@ -204,21 +240,44 @@ public class ProfileController {
             notes = "${operation7.description}",
             value = "${operation7.value}"
     )
-    public ApiResponse filter(@RequestBody FilterDto filterDto) throws Exception {
+    public ApiResponse filter(@RequestBody FilterDto filterDto,
+                              @RequestParam(name = "page") int page,
+                              @RequestParam(name = "size") int size) throws Exception {
 
         LOG.info("Started filtering method.");
         if (Objects.isNull(filterDto)) {
             throw new Exception("Bad request");
         }
 
-        List<Profile> list =
-                profileService.filterProfile(filterDto.getCityId(), filterDto.getTypeId(), filterDto.getGenderIds(),
-                        filterDto.getAgeIds(), filterDto.getSizeIds());
-        LOG.info("Filtering passed successfully.");
-        if (list.size() == 0) {
-            return new ApiResponse("No results based on entered filters.");
+        Page<Profile> profiles;
+        List<Profile> list;
+        try {
+            Pageable pageable = PageRequest.of(page, size);
+            profiles = profileService.filterProfiles(
+                    filterDto.getCityId(),
+                    filterDto.getTypeId(),
+                    filterDto.getGenderIds(),
+                    filterDto.getAgeIds(),
+                    filterDto.getSizeIds(),
+                    pageable);
+
+            list = profiles.getContent();
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("profiles", list);
+            response.put("currentPage", profiles.getNumber());
+            response.put("totalItems", profiles.getTotalElements());
+            response.put("totalPages", profiles.getTotalPages());
+
+            LOG.info("Filtering passed successfully.");
+            if (list.size() == 0) {
+                return new ApiResponse("No results based on entered filters.");
+            }
+            return new ApiResponse(response);
+        } catch (Exception e) {
+            throw new Exception("Something went wrong!");
         }
-        return new ApiResponse(list);
+
     }
 
     /**
