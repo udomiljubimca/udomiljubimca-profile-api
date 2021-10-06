@@ -2,18 +2,29 @@ server:
   port: 5555
 
 keycloak-client:
-  server-url: ${KEYCLOAK_URL_WITH_PATH:http://localhost:8080/auth}
-  realm: ${CLIENT_RELM_NAME:devnation}
+  server-url: ${KEYCLOAK_URL_WITH_PATH}
+  realm: ${CLIENT_RELM_NAME}
 
 spring:
+  main:
+    allow-bean-definition-overriding: true
+  # Database
   datasource:
-    url: jdbc:postgresql://localhost:5432/profiledatabase?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
-    username: postgres
-    password: postgres
+#    url: jdbc:postgresql://localhost:5432/psql?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+    # For correct works with docker-compose, we need to change "localhost" to a service name, take from docker-compose.yml
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://db:5432/profiledatabase
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  # JPA properties
   jpa:
-    show-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+    open-in-view: false
+    generate-ddl: true
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQL81Dialect
@@ -29,18 +40,18 @@ spring:
 
 #==================Cloudinary properties================
 cloudinary:
-  cloud_name: ${CLOUDINARY_NAME:udomiljubimca}
-  api_key: ${CLOUDINARY_API-KEY:372925527928556}
-  api_secret: ${CLOUDINARY_API_SECRET:Jd4I_wLdRvCGWPuSJBcK68474Ig}
+  cloud_name: ${CLOUDINARY_NAME}
+  api_key: ${CLOUDINARY_API-KEY}
+  api_secret: ${CLOUDINARY_API_SECRET}
 
 #==================Keycloak properties================
 keycloak:
-  auth-server-url: ${KEYCLOAK_URL_WITH_PATH:http://localhost:8080/auth}
-  realm: ${CLIENT_RELM_NAME:devnation}
-  resource: ${KEYCLOAK_CLIENT_NAME:cloud-gateway}
+  auth-server-url: ${KEYCLOAK_URL_WITH_PATH}
+  realm: ${CLIENT_RELM_NAME}
+  resource: ${KEYCLOAK_CLIENT_NAME}
   use-resource-role-mappings: true
   credentials:
-    secret: ${CLIENT_RELM_SECRET:eafb58b7-e21f-4a91-9c0d-6105bbd6ab3e}
+    secret: ${CLIENT_RELM_SECRET}
   public-client: true
   bearer-only: true
   principal-attribute: preferred_username

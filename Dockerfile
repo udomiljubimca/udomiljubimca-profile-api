@@ -2,7 +2,7 @@ FROM maven:3.8.1-openjdk-11 as builder
 RUN mkdir /build
 COPY ./ /build
 WORKDIR /build
-RUN mvn clean package -DfailIfNoTests=false
+RUN mvn clean package -DskipTests
 
 FROM openjdk:11.0.8-jdk-slim-buster
 LABEL MAINTAINER=udomi.ljubimca.mail@gmail.com
